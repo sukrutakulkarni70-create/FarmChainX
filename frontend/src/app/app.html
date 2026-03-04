@@ -1,0 +1,36 @@
+<!-- Background image layer -->
+<div class="fixed inset-0 -z-20 bg-[url('/themes/farm-bg.jpg')] bg-cover bg-center bg-no-repeat bg-fixed"></div>
+
+<!-- Dark overlay layer -->
+<div class="fixed inset-0 -z-10 bg-black/60"></div>
+
+<div class="flex h-screen flex-col relative">
+  <!-- Navbar -->
+  <div class="relative z-20">
+    <app-navbar (menuClick)="toggleSidebar()"></app-navbar>
+  </div>
+
+  <!-- Main content area -->
+  <div class="flex flex-1 overflow-hidden">
+    <!-- Sidebar -->
+    <div
+      class="transition-all duration-300 relative overflow-hidden"
+      [ngClass]="{
+        'w-64': isSidebarOpen,
+        'w-0': !isSidebarOpen
+      }"
+    >
+      <!-- Sidebar blending overlay -->
+      <div class="absolute inset-0 bg-gradient-to-r from-black/85 via-black/75 to-transparent backdrop-blur-xl"></div>
+
+      <div class="relative z-10 h-full">
+        <app-sidebar></app-sidebar>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-1 overflow-auto">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>

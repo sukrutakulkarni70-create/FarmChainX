@@ -1,0 +1,261 @@
+<nav
+  class="sticky top-0 left-0 w-full z-50 relative
+         bg-white/10 backdrop-blur-2xl
+         border-b border-white/20
+         shadow-[0_8px_32px_rgba(0,0,0,0.25)]
+         transition-all duration-500"
+>
+  <div class="max-w-7xl mx-auto px-4 md:px-8 lg:px-12">
+    <div class="flex items-center justify-between h-20">
+
+      <!-- LEFT SECTION -->
+      <div class="flex items-center gap-4">
+
+        <!-- Sidebar Toggle -->
+        <button *ngIf="isLoggedIn" (click)="menuClick.emit()" class="p-2 rounded-lg hover:bg-white/20 transition">
+          <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <line x1="4" y1="6" x2="20" y2="6" />
+            <line x1="4" y1="12" x2="20" y2="12" />
+            <line x1="4" y1="18" x2="20" y2="18" />
+          </svg>
+        </button>
+
+        <!-- Logo -->
+        <a routerLink="/" class="flex items-center gap-3">
+          <svg class="w-8 h-8 transition duration-500" [ngClass]="{
+              'text-amber-700': isScrolled,
+              'text-yellow-300': !isScrolled
+            }" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M9 12l2 2 4-4m5.618-4.103A.908.908 0 0017.9 3.5h-3.414A.908.908 0 0013.9 3.5l-4.5 4.5V20.5a.5.5 0 00.5.5h8.5a.5.5 0 00.5-.5v-13z" />
+          </svg>
+
+          <div class="text-3xl font-black bg-clip-text text-transparent transition duration-500" [ngClass]="{
+              'bg-gradient-to-r from-amber-700 to-yellow-500': isScrolled,
+              'bg-gradient-to-r from-yellow-300 to-amber-400': !isScrolled
+            }">
+            FarmChainX
+          </div>
+        </a>
+      </div>
+
+      <!-- RIGHT SECTION -->
+      <div class="hidden md:flex items-center gap-8 text-lg font-bold">
+
+        <!-- NOT LOGGED IN -->
+        <ng-container *ngIf="!isLoggedIn">
+          <a routerLink="/login" class="bg-gradient-to-r from-yellow-400 to-amber-600
+                   hover:from-yellow-500 hover:to-amber-700
+                   text-black px-7 py-3 rounded-full font-semibold
+                   shadow-xl hover:scale-105 transition">
+            Login
+          </a>
+
+          <a routerLink="/register" class="bg-gradient-to-r from-yellow-400 to-amber-600
+                   hover:from-yellow-500 hover:to-amber-700
+                   text-black px-7 py-3 rounded-full font-semibold
+                   shadow-xl hover:scale-105 transition">
+            Register
+          </a>
+        </ng-container>
+
+        <!-- LOGGED IN -->
+        <ng-container *ngIf="isLoggedIn">
+
+          <!-- Scan -->
+          <a routerLink="/scanner" class="group flex items-center gap-2
+         bg-gradient-to-r from-yellow-400 to-amber-600
+         hover:from-yellow-500 hover:to-amber-700
+         text-black font-semibold
+         px-6 py-3 rounded-full
+         shadow-xl hover:shadow-amber-400/40
+         hover:scale-105 transition duration-300">
+            <svg class="w-5 h-5 group-hover:animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M3 7v4a1 1 0 001 1h4M21 7v4a1 1 0 01-1 1h-4M3 17v-4a1 1 0 011-1h4M21 17v-4a1 1 0 00-1-1h-4" />
+            </svg>
+            Scan
+          </a>
+         <ng-container *ngIf="isFarmer">
+  <a
+    routerLink="/upload"
+    class="group flex items-center gap-2
+           bg-gradient-to-r from-yellow-400 to-amber-600
+           hover:from-yellow-500 hover:to-amber-700
+           text-black font-semibold
+           px-6 py-3 rounded-full
+           shadow-xl hover:shadow-amber-400/40
+           hover:scale-105 transition duration-300"
+  >
+    Upload
+  </a>
+
+  <a
+    routerLink="/products/my"
+    class="group flex items-center gap-2
+           bg-gradient-to-r from-yellow-400 to-amber-600
+           hover:from-yellow-500 hover:to-amber-700
+           text-black font-semibold
+           px-6 py-3 rounded-full
+           shadow-xl hover:shadow-amber-400/40
+           hover:scale-105 transition duration-300"
+  >
+    My Products
+  </a>
+ 
+</ng-container>
+ <!-- Notifications -->
+<div class="relative notification-wrapper">
+  <button
+    (click)="toggleNotifications()"
+    class="relative p-2 rounded-full
+           bg-white/10 hover:bg-white/20
+           transition duration-300"
+  >
+    <!-- Bell Icon -->
+    <svg
+      class="w-6 h-6 text-yellow-300"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      viewBox="0 0 24 24"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 
+           10-12 0v3.159c0 .538-.214 1.055-.595 
+           1.436L4 17h5m6 0v1a3 3 0 
+           11-6 0v-1m6 0H9"
+      />
+    </svg>
+
+    <!-- Unread Badge -->
+    <span
+      *ngIf="notifications.length > 0"
+      class="absolute -top-1 -right-1
+             bg-amber-500 text-black
+             text-xs px-1.5 py-0.5
+             rounded-full font-bold"
+    >
+      {{ notifications.length }}
+    </span>
+  </button>
+
+  <!-- Dropdown -->
+  <div
+    *ngIf="showNotifications"
+    class="absolute right-0 mt-3 w-80
+           bg-white text-gray-800
+           rounded-xl shadow-2xl
+           border border-gray-200
+           z-[9999]"
+  >
+    <div class="px-4 py-3 border-b font-semibold">
+      Notifications
+    </div>
+
+    <div *ngIf="notifications.length === 0"
+         class="p-4 text-sm text-gray-500">
+      No new notifications
+    </div>
+
+    <div
+      *ngFor="let n of displayedNotifications"
+      class="px-4 py-3 hover:bg-gray-100 cursor-pointer text-sm"
+      (click)="markRead(n.id)"
+    >
+      <div class="font-semibold">{{ n.title }}</div>
+      <div class="text-gray-600 text-xs">{{ n.message }}</div>
+    </div>
+
+    <div
+      *ngIf="notifications.length > 3"
+      class="text-center py-2 border-t text-sm text-amber-600 cursor-pointer"
+      (click)="toggleViewAll()"
+    >
+      {{ viewAll ? 'Show Less' : 'View All' }}
+    </div>
+  </div>
+</div>
+
+          <!-- Admin -->
+          <a *ngIf="isAdmin" routerLink="/admin" class="bg-gradient-to-r from-amber-700 to-yellow-500
+                   hover:scale-110 transition text-white
+                   px-7 py-3 rounded-full shadow-xl font-bold">
+            Admin
+          </a>
+          <!-- Profile Avatar -->
+<div class="relative ml-2 user-menu-wrapper">
+    <button
+    (click)="toggleUserMenu()"
+    class="w-10 h-10 rounded-full
+           bg-gradient-to-r from-yellow-400 to-amber-600
+           text-black font-bold
+           flex items-center justify-center
+           shadow-lg hover:scale-105 transition duration-300"
+  >
+    {{ userName?.charAt(0)?.toUpperCase() }}
+  </button>
+
+  <!-- Dropdown -->
+  <div
+    *ngIf="userMenuOpen"
+    class="absolute right-0 mt-3 w-56
+         bg-white text-gray-800
+         rounded-xl shadow-2xl
+         border border-gray-200
+         z-[9999]"
+  >
+    <div class="px-4 py-3 border-b">
+      <p class="font-semibold truncate">{{ userName }}</p>
+      <p class="text-xs text-gray-500">{{ userRole }}</p>
+    </div>
+
+    <a
+      routerLink="/profile"
+      (click)="toggleUserMenu()"
+      class="block px-4 py-2 text-sm hover:bg-gray-100"
+    >
+      Profile
+    </a>
+
+    <a
+      routerLink="/settings"
+      (click)="toggleUserMenu()"
+      class="block px-4 py-2 text-sm hover:bg-gray-100"
+    >
+      Settings
+    </a>
+
+    <div class="border-t">
+      <button
+        (click)="logout(); toggleUserMenu()"
+        class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+      >
+        Logout
+      </button>
+    </div>
+  </div>
+</div>
+
+        </ng-container>
+      </div>
+
+      <!-- MOBILE ICON -->
+      <svg *ngIf="!mobileMenuOpen" (click)="toggleMobileMenu()" class="h-8 w-8 md:hidden text-white cursor-pointer"
+        fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <line x1="4" y1="6" x2="20" y2="6" />
+        <line x1="4" y1="12" x2="20" y2="12" />
+        <line x1="4" y1="18" x2="20" y2="18" />
+      </svg>
+
+      <svg *ngIf="mobileMenuOpen" (click)="toggleMobileMenu()" class="h-8 w-8 md:hidden text-white cursor-pointer"
+        fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <line x1="6" y1="6" x2="18" y2="18" />
+        <line x1="6" y1="18" x2="18" y2="6" />
+      </svg>
+
+    </div>
+  </div>
+</nav>
