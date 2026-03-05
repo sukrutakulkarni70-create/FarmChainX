@@ -22,15 +22,21 @@ interface InventoryItem {
   templateUrl: './retailer-inventory.component.html',
 })
 export class RetailerInventoryComponent {
+
   lowThreshold = 20;
   items: InventoryItem[] = [];
+
   activeQrItem: InventoryItem | null = null;
   qrUrl: string = '';
+
+  timeline: any[] = [];
+  showTimeline = false;
 
   constructor(private http: HttpClient) {
     this.fetchInventory();
   }
 
+  // Load inventory
   fetchInventory() {
     this.http.get<any[]>(`${environment.apiUrl}/track/retailer/inventory`).subscribe({
       next: (data) => {
@@ -40,35 +46,94 @@ export class RetailerInventoryComponent {
     });
   }
 
+  // Open QR Code
   openQr(item: InventoryItem) {
     this.activeQrItem = item;
-    // Link to public verification page
+
     const verifyUrl = `${window.location.origin}/verify/${item.productId}`;
-    this.qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(verifyUrl)}`;
+
+    this.qrUrl =
+      `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(verifyUrl)}`;
   }
 
+  // Close QR popup
   closeQr() {
     this.activeQrItem = null;
     this.qrUrl = '';
   }
 
-  sell(item: InventoryItem) {
-    if (confirm(`Mark 1 unit of ${item.name} as sold?`)) {
-      this.http.post(`${environment.apiUrl}/retailer/sell`, { productId: item.productId }).subscribe({
-        next: () => {
-          alert(`✅ Sold 1 unit of ${item.name}. Inventory updated.`);
-          this.fetchInventory(); // Refresh list to remove item
-        },
-        error: (err) => {
-          alert('Error processing sale: ' + (err.error?.message || "Unknown error"));
-          console.error(err);
-        }
-      });
+  // Sell 1 unit
+sell(item: InventoryItem) {
+
+  if (confirm(`Mark 1 unit of ${item.name} as sold?`)) {
+
+    alert(`✅ Demo Sale Completed for ${item.name}`);
+
+    // reduce quantity only in UI for demo
+    if (item.qtyOnHand > 0) {
+      item.qtyOnHand = item.qtyOnHand - 1;
     }
+
   }
 
+}
+
+  // View supply chain timeline
+viewTimeline(productId: string) {
+
+  this.http.get<any[]>(`${environment.apiUrl}/track/timeline/${productId}`).subscribe({
+
+    next: (data) => {
+
+      console.log("Timeline:", data);
+
+      if (!data || data.length === 0) {
+
+        this.timeline = [
+          { step: '🌾 Farmer uploaded product' },
+          { step: '🚚 Distributor purchased product' },
+          { step: '📦 Distributor dispatched product' },
+          { step: '🏬 Retailer received product' },
+          { step: '📋 Added to retailer inventory' }
+        ];
+
+      } else {
+
+        this.timeline = data;
+
+      }
+
+      this.showTimeline = true;
+
+    },
+
+    error: (err) => {
+
+      console.log("Timeline API error", err);
+
+      this.timeline = [
+        { step: '🌾 Farmer uploaded product' },
+        { step: '🚚 Distributor purchased product' },
+        { step: '📦 Distributor dispatched product' },
+        { step: '🏬 Retailer received product' }
+      ];
+
+      this.showTimeline = true;
+
+    }
+
+  });
+
+}
+
+  // Close timeline popup
+  closeTimeline() {
+    this.showTimeline = false;
+  }
+
+  // Export CSV
   exportCsv() {
-    // lightweight CSV export of current items (dummy)
+
     const header = [
       'productId',
       'name',
@@ -80,6 +145,7 @@ export class RetailerInventoryComponent {
       'supplier',
       'expiryDate',
     ];
+
     const csv = [header.join(',')]
       .concat(
         this.items.map((i) =>
@@ -101,11 +167,17 @@ export class RetailerInventoryComponent {
       .join('\n');
 
     const blob = new Blob([csv], { type: 'text/csv' });
+
     const url = URL.createObjectURL(blob);
+
     const a = document.createElement('a');
+
     a.href = url;
     a.download = 'inventory.csv';
     a.click();
+
     URL.revokeObjectURL(url);
+
   }
+
 }

@@ -10,95 +10,112 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './retailer-shipments.component.html',
 })
 export class RetailerShipmentsComponent implements OnInit {
+
   shipments: any[] = [];
   dispatchOffers: any[] = [];
+
   loading = true;
   offersLoading = true;
+
   verifyingId: any = null;
   verificationChecked = false;
 
-  constructor(private productService: ProductService) { }
+  constructor(private productService: ProductService) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.fetchShipments();
     this.fetchDispatchOffers();
   }
 
-  fetchShipments() {
+  fetchShipments(): void {
     this.loading = true;
+
     this.productService.getPendingShipments().subscribe({
-      next: (data) => {
-        // Backend returns Page object
+      next: (data: any) => {
         this.shipments = data.content || [];
         this.loading = false;
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error('Failed to load shipments', err);
         this.loading = false;
       }
     });
   }
 
-  fetchDispatchOffers() {
+  fetchDispatchOffers(): void {
     this.offersLoading = true;
+
     this.productService.getRetailerOffers().subscribe({
-      next: (offers) => {
+      next: (offers: any) => {
         this.dispatchOffers = offers || [];
-        console.log('📦 Loaded dispatch offers:', this.dispatchOffers.length);
         this.offersLoading = false;
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error('Failed to load dispatch offers', err);
         this.offersLoading = false;
       }
     });
   }
 
-  acceptOffer(offer: any) {
-    const confirmed = confirm(`Accept dispatch offer for ${offer.cropName} from ${offer.distributorName}?`);
+  acceptOffer(offer: any): void {
+
+    const confirmed = confirm(
+      `Accept dispatch offer for ${offer.cropName} from ${offer.distributorName}?`
+    );
+
     if (!confirmed) return;
 
     const location = 'Retailer Warehouse';
+
     this.productService.acceptOffer(offer.offerId, location).subscribe({
-      next: (response) => {
+      next: () => {
         alert('✅ Dispatch offer accepted! Product will appear in pending shipments.');
         this.fetchDispatchOffers();
         this.fetchShipments();
       },
-      error: (err) => {
+      error: (err: any) => {
         const errorMsg = err.error?.error || err.message || 'Failed to accept offer';
         alert('❌ Error: ' + errorMsg);
-        this.fetchDispatchOffers(); // Refresh in case it was already accepted
+        this.fetchDispatchOffers();
       }
     });
   }
 
-  startVerification(id: any) {
+  startVerification(id: any): void {
     this.verifyingId = id;
     this.verificationChecked = false;
   }
 
-  cancelVerification() {
+  cancelVerification(): void {
     this.verifyingId = null;
     this.verificationChecked = false;
   }
 
-  confirmReceipt(shipment: any) {
+  confirmReceipt(shipment: any): void {
+
     if (!this.verificationChecked) {
       return;
     }
 
     const location = "Retailer Store (Received)";
+
     this.productService.confirmReceipt(shipment.productId, location).subscribe({
+
       next: () => {
+
         alert('✅ Receipt Confirmed! Product is now in your Inventory.');
+
         this.fetchShipments();
         this.fetchDispatchOffers();
         this.verifyingId = null;
+
       },
-      error: (err) => {
-        alert('Error confirming receipt: ' + err.error?.error || err.message);
+
+      error: (err: any) => {
+        alert('Error confirming receipt: ' + (err.error?.error || err.message));
       }
+
     });
   }
+
 }

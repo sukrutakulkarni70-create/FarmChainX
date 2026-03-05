@@ -70,13 +70,21 @@
               </svg>
             </button>
           </td>
-          <td class="px-6 py-4 text-right">
-            <button
-              class="px-4 py-2 bg-gradient-to-r from-emerald-600 to-emerald-700 text-white hover:from-emerald-700 hover:to-emerald-800 rounded-lg text-sm font-semibold transition-all shadow-md hover:shadow-lg"
-              (click)="sell(it)">
-              Sell
-            </button>
-          </td>
+          <td class="px-6 py-4 text-right space-x-2">
+
+  <button
+    class="px-3 py-2 bg-indigo-500 text-white rounded-lg text-sm font-semibold hover:bg-indigo-600 transition"
+    (click)="viewTimeline(it.productId)">
+    View History
+  </button>
+
+  <button
+    class="px-4 py-2 bg-gradient-to-r from-emerald-600 to-emerald-700 text-white hover:from-emerald-700 hover:to-emerald-800 rounded-lg text-sm font-semibold transition-all shadow-md hover:shadow-lg"
+    (click)="sell(it)">
+    Sell
+  </button>
+
+</td>
         </tr>
       </tbody>
     </table>
@@ -110,4 +118,46 @@
       <p>No inventory items found.</p>
     </div>
   </ng-template>
+  <!-- Timeline Modal -->
+<!-- Timeline Modal -->
+<div *ngIf="showTimeline"
+ class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60"
+ (click)="showTimeline=false">
+
+  <div class="bg-white rounded-xl shadow-xl p-6 w-[420px]"
+       (click)="$event.stopPropagation()">
+
+    <h3 class="text-lg font-bold mb-6 text-center">Supply Chain Timeline</h3>
+
+    <div class="relative border-l-2 border-emerald-500 ml-4">
+
+      <div *ngFor="let t of timeline" class="mb-6 ml-4">
+
+        <div class="absolute -left-2 w-4 h-4 bg-emerald-500 rounded-full"></div>
+
+        <p class="font-semibold text-gray-800">
+          {{t.event || t.step}}
+        </p>
+
+        <p class="text-sm text-gray-500">
+          {{t.actor}} • {{t.location}}
+        </p>
+
+        <p class="text-xs text-gray-400">
+          {{t.timestamp | date:'medium'}}
+        </p>
+
+      </div>
+
+    </div>
+
+    <button
+      class="mt-4 w-full bg-gray-200 py-2 rounded hover:bg-gray-300"
+      (click)="showTimeline=false">
+      Close
+    </button>
+
+  </div>
+
+</div>
 </div>
