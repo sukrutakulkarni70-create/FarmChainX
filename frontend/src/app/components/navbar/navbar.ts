@@ -90,7 +90,7 @@ export class Navbar {
   onDocumentClick(event: MouseEvent) {
     const target = event.target as HTMLElement;
 
-    if (!target.closest('.notification-wrapper')) {
+    if (!target.closest('.fcx-bell-wrap')) {
       this.showNotifications = false;
     }
 

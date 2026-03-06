@@ -504,10 +504,10 @@
             <span *ngIf="notifications.length > 0" class="fcx-notif-badge">{{ notifications.length }}</span>
           </button>
 
-          <div *ngIf="showNotifications" class="fcx-notif-dropdown">
+          <div *ngIf="showNotifications" class="fcx-notif-dropdown" (click)="$event.stopPropagation()">
             <div class="fcx-notif-header">Notifications</div>
             <div *ngIf="notifications.length === 0" class="fcx-notif-empty">No new notifications</div>
-            <div *ngFor="let n of displayedNotifications" class="fcx-notif-item" (click)="markRead(n.id)">
+            <div *ngFor="let n of displayedNotifications" class="fcx-notif-item" (click)="markRead(n.id); $event.stopPropagation()">
               <div class="fcx-notif-item-title">{{ n.title }}</div>
               <div class="fcx-notif-item-msg">{{ n.message }}</div>
             </div>
