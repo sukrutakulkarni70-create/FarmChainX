@@ -1,15 +1,17 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
 import { Router, RouterModule } from '@angular/router';
 import { environment } from '../../../environments/environment';
+import { Navbar } from '../../components/navbar/navbar';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   standalone: true,
   selector: 'app-register',
   templateUrl: './register.html',
-  imports: [CommonModule, FormsModule, RouterModule],
+  styleUrl: './register.scss',
+  imports: [CommonModule, FormsModule, RouterModule, Navbar],
 })
 export class RegisterComponent {
   name = '';
@@ -29,7 +31,7 @@ export class RegisterComponent {
 
   submitting = false;
 
-  constructor(private http: HttpClient, private router: Router) { }
+  constructor(private authService: AuthService, private router: Router) { }
 
   checkPassword() {
     this.passwordValid.minLength = this.password.length >= 8;
@@ -63,30 +65,43 @@ export class RegisterComponent {
   }
 
   submit() {
+    console.log("Register button clicked");
+
     if (!this.isFormValid()) {
       alert('Please fix validation errors before submitting.');
       return;
     }
 
+    const allowedRoles = ["Consumer", "Farmer", "Distributor", "Retailer"];
+    if (!allowedRoles.includes(this.role)) {
+      alert("Only Consumer, Farmer, Distributor, Retailer allowed");
+      return;
+    }
+
     this.submitting = true;
 
-    this.http
-      .post(`${environment.apiUrl}/auth/register`, {
-        name: this.name.trim(),
-        email: this.email.trim(),
-        password: this.password,
-        role: this.role,
-      })
+    const payload = {
+      name: this.name.trim(),
+      email: this.email.trim(),
+      password: this.password,
+      role: this.role,
+    };
+
+    console.log("Register payload:", payload);
+
+    this.authService
+      .register(payload)
       .subscribe({
-        next: () => {
+        next: (res) => {
           this.submitting = false;
+          console.log('Registration success:', res);
           alert('Registration successful 🎉');
           this.router.navigate(['/login']);
         },
         error: (err) => {
           this.submitting = false;
-          console.error('REGISTER ERROR →', err);
-          alert(err?.error?.message || 'Registration failed');
+          console.error('Registration error:', err);
+          alert(err?.error?.message || err?.error || 'Registration failed');
         },
       });
   }

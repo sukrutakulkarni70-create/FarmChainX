@@ -5,14 +5,16 @@ import { HttpClient } from '@angular/common/http';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { environment } from '../../../environments/environment';
+import { Navbar } from '../../components/navbar/navbar';
 
 @Component({
   standalone: true,
   selector: 'app-login',
   templateUrl: './login.html',
-  imports: [CommonModule, FormsModule, RouterModule]
+  styleUrl: './login.scss',
+  imports: [CommonModule, FormsModule, RouterModule, Navbar]
 })
-export class Login {
+export class LoginComponent {
   email = '';
   password = '';
 
@@ -32,7 +34,22 @@ export class Login {
         this.auth.setAuthFromResponse(res);
 
         alert('Login successful ✅');
-        this.router.navigate(['/dashboard']);
+
+        // Role-based redirection
+        const role = res.role;
+        if (role === 'Farmer') {
+          this.router.navigate(['/farmer/dashboard']);
+        } else if (role === 'Consumer') {
+          this.router.navigate(['/consumer/dashboard']);
+        } else if (role === 'Distributor') {
+          this.router.navigate(['/distributor/dashboard']);
+        } else if (role === 'Retailer') {
+          this.router.navigate(['/retailer/dashboard']);
+        } else if (role === 'Admin' || this.auth.isAdmin()) {
+          this.router.navigate(['/admin/overview']);
+        } else {
+          this.router.navigate(['/dashboard']);
+        }
       },
       error: (err) => {
         const msg = err?.error?.error || 'Invalid email or password';

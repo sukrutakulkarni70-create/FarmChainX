@@ -1,261 +1,606 @@
-<nav
-  class="sticky top-0 left-0 w-full z-50 relative
-         bg-white/10 backdrop-blur-2xl
-         border-b border-white/20
-         shadow-[0_8px_32px_rgba(0,0,0,0.25)]
-         transition-all duration-500"
->
-  <div class="max-w-7xl mx-auto px-4 md:px-8 lg:px-12">
-    <div class="flex items-center justify-between h-20">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@500;600&display=swap');
 
-      <!-- LEFT SECTION -->
-      <div class="flex items-center gap-4">
+  .fcx-nav {
+    position: sticky;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 100;
+    background: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
+    box-shadow: 0 1px 8px rgba(0, 0, 0, 0.07);
+    font-family: 'Inter', sans-serif;
+  }
 
-        <!-- Sidebar Toggle -->
-        <button *ngIf="isLoggedIn" (click)="menuClick.emit()" class="p-2 rounded-lg hover:bg-white/20 transition">
-          <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <line x1="4" y1="6" x2="20" y2="6" />
-            <line x1="4" y1="12" x2="20" y2="12" />
-            <line x1="4" y1="18" x2="20" y2="18" />
-          </svg>
-        </button>
+  .fcx-nav-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 68px;
+  }
 
-        <!-- Logo -->
-        <a routerLink="/" class="flex items-center gap-3">
-          <svg class="w-8 h-8 transition duration-500" [ngClass]="{
-              'text-amber-700': isScrolled,
-              'text-yellow-300': !isScrolled
-            }" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round"
-              d="M9 12l2 2 4-4m5.618-4.103A.908.908 0 0017.9 3.5h-3.414A.908.908 0 0013.9 3.5l-4.5 4.5V20.5a.5.5 0 00.5.5h8.5a.5.5 0 00.5-.5v-13z" />
-          </svg>
+  /* Logo */
+  .fcx-nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    text-decoration: none;
+  }
 
-          <div class="text-3xl font-black bg-clip-text text-transparent transition duration-500" [ngClass]="{
-              'bg-gradient-to-r from-amber-700 to-yellow-500': isScrolled,
-              'bg-gradient-to-r from-yellow-300 to-amber-400': !isScrolled
-            }">
-            FarmChainX
-          </div>
-        </a>
+  .fcx-logo-icon {
+    width: 36px;
+    height: 36px;
+    background: #16a34a;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .fcx-logo-text {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #111827;
+    letter-spacing: -0.02em;
+    font-family: 'Poppins', sans-serif;
+  }
+
+  /* Right actions */
+  .fcx-nav-right {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  /* Buttons */
+  .fcx-nav-login {
+    padding: 0.5rem 1.25rem;
+    border: 2px solid #16a34a;
+    color: #16a34a;
+    background: transparent;
+    font-size: 0.88rem;
+    font-weight: 600;
+    border-radius: 8px;
+    text-decoration: none;
+    font-family: 'Inter', sans-serif;
+    transition: background 0.18s, color 0.18s;
+  }
+
+  .fcx-nav-login:hover {
+    background: #f0fdf4;
+  }
+
+  .fcx-nav-register {
+    padding: 0.5rem 1.25rem;
+    background: #16a34a;
+    color: #fff;
+    font-size: 0.88rem;
+    font-weight: 600;
+    border-radius: 8px;
+    text-decoration: none;
+    font-family: 'Inter', sans-serif;
+    transition: background 0.18s, transform 0.15s;
+    border: 2px solid #16a34a;
+  }
+
+  .fcx-nav-register:hover {
+    background: #15803d;
+    transform: translateY(-1px);
+  }
+
+  /* Logged-in links */
+  .fcx-nav-link {
+    padding: 0.48rem 1.1rem;
+    background: #f0fdf4;
+    border: 1.5px solid #86efac;
+    color: #16a34a;
+    font-size: 0.86rem;
+    font-weight: 600;
+    border-radius: 8px;
+    text-decoration: none;
+    font-family: 'Inter', sans-serif;
+    transition: background 0.15s;
+  }
+
+  .fcx-nav-link:hover {
+    background: #dcfce7;
+  }
+
+  /* Main Nav Items */
+  .fcx-nav-menu {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-left: 2rem;
+    flex: 1;
+  }
+
+  .fcx-menu-item {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: #4b5563;
+    text-decoration: none;
+    transition: color 0.2s;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .fcx-menu-item:hover,
+  .fcx-menu-item.active {
+    color: #16a34a;
+  }
+
+  @media (max-width: 1024px) {
+    .fcx-nav-menu {
+      display: none;
+    }
+  }
+
+  /* Avatar */
+  .fcx-avatar {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, #16a34a, #22c55e);
+    border-radius: 50%;
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: none;
+    position: relative;
+  }
+
+  /* User dropdown */
+  /* User dropdown (User Refactor) */
+  .profile-menu {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .profile-dropdown {
+    position: absolute;
+    right: 0;
+    top: 45px;
+    width: 180px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    padding: 10px 0;
+    z-index: 1000;
+    list-style: none;
+    margin: 0;
+  }
+
+  .profile-role {
+    padding: 10px 16px;
+    font-size: 14px;
+    color: #666;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 5px;
+  }
+
+  .dropdown-item {
+    width: 100%;
+    text-align: left;
+    padding: 10px 16px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    display: block;
+    text-decoration: none;
+    color: #333;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 500;
+  }
+
+  .dropdown-item:hover {
+    background: #f5f5f5;
+  }
+
+  .logout {
+    color: #e53935;
+  }
+
+  .fcx-user-wrap {
+    position: relative;
+  }
+
+  .fcx-dropdown {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 0.5rem);
+    width: 210px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+    z-index: 9999;
+    overflow: hidden;
+  }
+
+  .fcx-dd-header {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #f3f4f6;
+  }
+
+  .fcx-dd-header p {
+    font-weight: 600;
+    color: #111827;
+    font-size: 0.88rem;
+  }
+
+  .fcx-dd-header span {
+    font-size: 0.75rem;
+    color: #6b7280;
+  }
+
+  .fcx-dd-link {
+    display: block;
+    padding: 0.6rem 1rem;
+    font-size: 0.85rem;
+    color: #374151;
+    text-decoration: none;
+  }
+
+  .fcx-dd-link:hover {
+    background: #f9fafb;
+  }
+
+  .fcx-dd-logout {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 0.6rem 1rem;
+    font-size: 0.85rem;
+    color: #ef4444;
+    background: transparent;
+    border: none;
+    border-top: 1px solid #f3f4f6;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .fcx-dd-logout:hover {
+    background: #fef2f2;
+  }
+
+  /* Notification bell */
+  .fcx-bell-wrap {
+    position: relative;
+  }
+
+  .fcx-bell-btn {
+    width: 36px;
+    height: 36px;
+    background: #f9fafb;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .fcx-bell-btn:hover {
+    background: #f0fdf4;
+    border-color: #86efac;
+  }
+
+  .fcx-notif-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: #16a34a;
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 0.1rem 0.3rem;
+    border-radius: 100px;
+    min-width: 16px;
+    text-align: center;
+  }
+
+  .fcx-notif-dropdown {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 0.5rem);
+    width: 300px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+    z-index: 9999;
+    overflow: hidden;
+  }
+
+  .fcx-notif-header {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #f3f4f6;
+    font-weight: 700;
+    font-size: 0.88rem;
+    color: #111827;
+  }
+
+  .fcx-notif-empty {
+    padding: 1rem;
+    font-size: 0.85rem;
+    color: #9ca3af;
+    text-align: center;
+  }
+
+  .fcx-notif-item {
+    padding: 0.7rem 1rem;
+    border-bottom: 1px solid #f9fafb;
+    cursor: pointer;
+  }
+
+  .fcx-notif-item:hover {
+    background: #f9fafb;
+  }
+
+  .fcx-notif-item-title {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #111827;
+  }
+
+  .fcx-notif-item-msg {
+    font-size: 0.78rem;
+    color: #6b7280;
+  }
+
+  .fcx-notif-view-all {
+    padding: 0.6rem;
+    text-align: center;
+    font-size: 0.82rem;
+    color: #16a34a;
+    cursor: pointer;
+    font-weight: 600;
+  }
+
+  .fcx-notif-view-all:hover {
+    background: #f0fdf4;
+  }
+
+  /* Mobile hamburger */
+  .fcx-hamburger {
+    display: none;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0.25rem;
+  }
+
+  @media (max-width: 768px) {
+    .fcx-nav-right {
+      display: none;
+    }
+
+    .fcx-hamburger {
+      display: block;
+    }
+
+    .fcx-mobile-menu {
+      position: fixed;
+      top: 68px;
+      left: 0;
+      width: 100%;
+      background: #fff;
+      border-bottom: 1px solid #e5e7eb;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      z-index: 99;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .fcx-mobile-item {
+      padding: 0.75rem 1rem;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #374151;
+      text-decoration: none;
+      border-radius: 8px;
+    }
+
+    .fcx-mobile-item:hover {
+      background: #f9fafb;
+      color: #16a34a;
+    }
+  }
+</style>
+
+<nav class="fcx-nav">
+  <div class="fcx-nav-inner">
+
+    <!-- Logo -->
+    <a routerLink="/" class="fcx-nav-logo">
+      <div class="fcx-logo-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" />
+          <line x1="12" y1="8" x2="12" y2="16" />
+          <line x1="8" y1="12" x2="16" y2="12" />
+        </svg>
       </div>
+      <span class="fcx-logo-text">FarmChainX</span>
+    </a>
 
-      <!-- RIGHT SECTION -->
-      <div class="hidden md:flex items-center gap-8 text-lg font-bold">
+    <!-- Main Navigation (Role-Aware) -->
+    <div class="fcx-nav-menu" *ngIf="isLoggedIn">
+      <!-- Farmer Navigation (Show only when NOT on Farmer Dashboard) -->
+      <ng-container *ngIf="isFarmer && !isFarmerDashboard">
+        <a routerLink="/dashboard" routerLinkActive="active" class="fcx-menu-item">Dashboard</a>
+        <a routerLink="/products/my" routerLinkActive="active" class="fcx-menu-item">My Products</a>
+        <a routerLink="/marketplace" routerLinkActive="active" class="fcx-menu-item">Marketplace</a>
+      </ng-container>
 
-        <!-- NOT LOGGED IN -->
-        <ng-container *ngIf="!isLoggedIn">
-          <a routerLink="/login" class="bg-gradient-to-r from-yellow-400 to-amber-600
-                   hover:from-yellow-500 hover:to-amber-700
-                   text-black px-7 py-3 rounded-full font-semibold
-                   shadow-xl hover:scale-105 transition">
-            Login
-          </a>
+      <!-- Consumer Navigation -->
+      <ng-container *ngIf="isConsumer && !isConsumerDashboard">
+        <a routerLink="/consumer/dashboard" routerLinkActive="active" class="fcx-menu-item">Consumer Panel</a>
+        <a routerLink="/consumer/marketplace" routerLinkActive="active" class="fcx-menu-item">Marketplace</a>
+        <a routerLink="/consumer/verify" routerLinkActive="active" class="fcx-menu-item">Product Scanner</a>
+      </ng-container>
 
-          <a routerLink="/register" class="bg-gradient-to-r from-yellow-400 to-amber-600
-                   hover:from-yellow-500 hover:to-amber-700
-                   text-black px-7 py-3 rounded-full font-semibold
-                   shadow-xl hover:scale-105 transition">
-            Register
-          </a>
+      <!-- Distributor Navigation -->
+      <ng-container *ngIf="isDistributor && !isDistributorDashboard">
+        <a routerLink="/distributor/procurement" routerLinkActive="active" class="fcx-menu-item">Procurement</a>
+        <a routerLink="/distributor/logistics" routerLinkActive="active" class="fcx-menu-item">Logistics</a>
+      </ng-container>
+
+      <!-- Retailer Navigation -->
+      <ng-container *ngIf="isRetailer && !isRetailerDashboard">
+        <a routerLink="/retailer/dashboard" routerLinkActive="active" class="fcx-menu-item">Dashboard</a>
+        <a routerLink="/retailer/inventory" routerLinkActive="active" class="fcx-menu-item">Inventory</a>
+        <a routerLink="/retailer/market" routerLinkActive="active" class="fcx-menu-item">Market</a>
+      </ng-container>
+
+      <!-- Admin Navigation -->
+      <ng-container *ngIf="isAdmin">
+        <a routerLink="/admin/overview" routerLinkActive="active" class="fcx-menu-item">Overview</a>
+        <a routerLink="/admin/users" routerLinkActive="active" class="fcx-menu-item">Users</a>
+        <a routerLink="/admin/logs" routerLinkActive="active" class="fcx-menu-item">Logs</a>
+      </ng-container>
+    </div>
+
+    <!-- Right section -->
+    <div class="fcx-nav-right">
+
+      <!-- NOT LOGGED IN -->
+      <ng-container *ngIf="!isLoggedIn">
+        <a routerLink="/login" class="fcx-nav-login">Login</a>
+        <a routerLink="/register" class="fcx-nav-register">Register</a>
+      </ng-container>
+
+      <!-- LOGGED IN -->
+      <ng-container *ngIf="isLoggedIn">
+
+        <!-- Scanner (Hide for Farmer dashboard and Consumer) -->
+        <a *ngIf="!isFarmer && !isConsumer" routerLink="/scanner" class="fcx-nav-link">Scan</a>
+
+        <!-- Farmer only -->
+        <ng-container *ngIf="isFarmer">
+          <a routerLink="/upload" class="fcx-nav-link">Upload</a>
         </ng-container>
 
-        <!-- LOGGED IN -->
-        <ng-container *ngIf="isLoggedIn">
-
-          <!-- Scan -->
-          <a routerLink="/scanner" class="group flex items-center gap-2
-         bg-gradient-to-r from-yellow-400 to-amber-600
-         hover:from-yellow-500 hover:to-amber-700
-         text-black font-semibold
-         px-6 py-3 rounded-full
-         shadow-xl hover:shadow-amber-400/40
-         hover:scale-105 transition duration-300">
-            <svg class="w-5 h-5 group-hover:animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M3 7v4a1 1 0 001 1h4M21 7v4a1 1 0 01-1 1h-4M3 17v-4a1 1 0 011-1h4M21 17v-4a1 1 0 00-1-1h-4" />
+        <!-- Notifications -->
+        <div class="fcx-bell-wrap">
+          <button class="fcx-bell-btn" (click)="toggleNotifications()">
+            <svg width="18" height="18" fill="none" stroke="#374151" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
             </svg>
-            Scan
-          </a>
-         <ng-container *ngIf="isFarmer">
-  <a
-    routerLink="/upload"
-    class="group flex items-center gap-2
-           bg-gradient-to-r from-yellow-400 to-amber-600
-           hover:from-yellow-500 hover:to-amber-700
-           text-black font-semibold
-           px-6 py-3 rounded-full
-           shadow-xl hover:shadow-amber-400/40
-           hover:scale-105 transition duration-300"
-  >
-    Upload
-  </a>
+            <span *ngIf="notifications.length > 0" class="fcx-notif-badge">{{ notifications.length }}</span>
+          </button>
 
-  <a
-    routerLink="/products/my"
-    class="group flex items-center gap-2
-           bg-gradient-to-r from-yellow-400 to-amber-600
-           hover:from-yellow-500 hover:to-amber-700
-           text-black font-semibold
-           px-6 py-3 rounded-full
-           shadow-xl hover:shadow-amber-400/40
-           hover:scale-105 transition duration-300"
-  >
-    My Products
-  </a>
- 
-</ng-container>
- <!-- Notifications -->
-<div class="relative notification-wrapper">
-  <button
-    (click)="toggleNotifications()"
-    class="relative p-2 rounded-full
-           bg-white/10 hover:bg-white/20
-           transition duration-300"
-  >
-    <!-- Bell Icon -->
-    <svg
-      class="w-6 h-6 text-yellow-300"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2"
-      viewBox="0 0 24 24"
-    >
-      <path
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 
-           10-12 0v3.159c0 .538-.214 1.055-.595 
-           1.436L4 17h5m6 0v1a3 3 0 
-           11-6 0v-1m6 0H9"
-      />
-    </svg>
+          <div *ngIf="showNotifications" class="fcx-notif-dropdown">
+            <div class="fcx-notif-header">Notifications</div>
+            <div *ngIf="notifications.length === 0" class="fcx-notif-empty">No new notifications</div>
+            <div *ngFor="let n of displayedNotifications" class="fcx-notif-item" (click)="markRead(n.id)">
+              <div class="fcx-notif-item-title">{{ n.title }}</div>
+              <div class="fcx-notif-item-msg">{{ n.message }}</div>
+            </div>
+            <div *ngIf="notifications.length > 3" class="fcx-notif-view-all" (click)="toggleViewAll()">
+              {{ viewAll ? 'Show Less' : 'View All' }}
+            </div>
+          </div>
+        </div>
 
-    <!-- Unread Badge -->
-    <span
-      *ngIf="notifications.length > 0"
-      class="absolute -top-1 -right-1
-             bg-amber-500 text-black
-             text-xs px-1.5 py-0.5
-             rounded-full font-bold"
-    >
-      {{ notifications.length }}
-    </span>
-  </button>
+        <!-- Admin -->
+        <a *ngIf="isAdmin" routerLink="/admin" class="fcx-nav-register">Admin</a>
 
-  <!-- Dropdown -->
-  <div
-    *ngIf="showNotifications"
-    class="absolute right-0 mt-3 w-80
-           bg-white text-gray-800
-           rounded-xl shadow-2xl
-           border border-gray-200
-           z-[9999]"
-  >
-    <div class="px-4 py-3 border-b font-semibold">
-      Notifications
+        <!-- Avatar + Profile Dropdown (Refactored) -->
+        <div class="profile-menu">
+          <button class="fcx-avatar" (click)="toggleProfileMenu()">
+            {{ userName?.charAt(0)?.toUpperCase() }}
+          </button>
+
+          <div class="profile-dropdown" *ngIf="showProfileMenu">
+            <div class="profile-role">
+              Role: {{ userRole?.replace('ROLE_', '') | titlecase }}
+            </div>
+
+            <a routerLink="/profile" class="dropdown-item" (click)="showProfileMenu = false">
+              Profile
+            </a>
+
+            <button class="dropdown-item logout" (click)="logout()">
+              Logout
+            </button>
+          </div>
+        </div>
+
+      </ng-container>
     </div>
 
-    <div *ngIf="notifications.length === 0"
-         class="p-4 text-sm text-gray-500">
-      No new notifications
-    </div>
-
-    <div
-      *ngFor="let n of displayedNotifications"
-      class="px-4 py-3 hover:bg-gray-100 cursor-pointer text-sm"
-      (click)="markRead(n.id)"
-    >
-      <div class="font-semibold">{{ n.title }}</div>
-      <div class="text-gray-600 text-xs">{{ n.message }}</div>
-    </div>
-
-    <div
-      *ngIf="notifications.length > 3"
-      class="text-center py-2 border-t text-sm text-amber-600 cursor-pointer"
-      (click)="toggleViewAll()"
-    >
-      {{ viewAll ? 'Show Less' : 'View All' }}
-    </div>
-  </div>
-</div>
-
-          <!-- Admin -->
-          <a *ngIf="isAdmin" routerLink="/admin" class="bg-gradient-to-r from-amber-700 to-yellow-500
-                   hover:scale-110 transition text-white
-                   px-7 py-3 rounded-full shadow-xl font-bold">
-            Admin
-          </a>
-          <!-- Profile Avatar -->
-<div class="relative ml-2 user-menu-wrapper">
-    <button
-    (click)="toggleUserMenu()"
-    class="w-10 h-10 rounded-full
-           bg-gradient-to-r from-yellow-400 to-amber-600
-           text-black font-bold
-           flex items-center justify-center
-           shadow-lg hover:scale-105 transition duration-300"
-  >
-    {{ userName?.charAt(0)?.toUpperCase() }}
-  </button>
-
-  <!-- Dropdown -->
-  <div
-    *ngIf="userMenuOpen"
-    class="absolute right-0 mt-3 w-56
-         bg-white text-gray-800
-         rounded-xl shadow-2xl
-         border border-gray-200
-         z-[9999]"
-  >
-    <div class="px-4 py-3 border-b">
-      <p class="font-semibold truncate">{{ userName }}</p>
-      <p class="text-xs text-gray-500">{{ userRole }}</p>
-    </div>
-
-    <a
-      routerLink="/profile"
-      (click)="toggleUserMenu()"
-      class="block px-4 py-2 text-sm hover:bg-gray-100"
-    >
-      Profile
-    </a>
-
-    <a
-      routerLink="/settings"
-      (click)="toggleUserMenu()"
-      class="block px-4 py-2 text-sm hover:bg-gray-100"
-    >
-      Settings
-    </a>
-
-    <div class="border-t">
-      <button
-        (click)="logout(); toggleUserMenu()"
-        class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
-      >
-        Logout
-      </button>
-    </div>
-  </div>
-</div>
-
-        </ng-container>
-      </div>
-
-      <!-- MOBILE ICON -->
-      <svg *ngIf="!mobileMenuOpen" (click)="toggleMobileMenu()" class="h-8 w-8 md:hidden text-white cursor-pointer"
-        fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+    <!-- Mobile hamburger -->
+    <button class="fcx-hamburger" (click)="toggleMobileMenu()">
+      <svg *ngIf="!mobileMenuOpen" width="24" height="24" fill="none" stroke="#374151" stroke-width="2"
+        viewBox="0 0 24 24">
         <line x1="4" y1="6" x2="20" y2="6" />
         <line x1="4" y1="12" x2="20" y2="12" />
         <line x1="4" y1="18" x2="20" y2="18" />
       </svg>
-
-      <svg *ngIf="mobileMenuOpen" (click)="toggleMobileMenu()" class="h-8 w-8 md:hidden text-white cursor-pointer"
-        fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <svg *ngIf="mobileMenuOpen" width="24" height="24" fill="none" stroke="#374151" stroke-width="2"
+        viewBox="0 0 24 24">
         <line x1="6" y1="6" x2="18" y2="18" />
         <line x1="6" y1="18" x2="18" y2="6" />
       </svg>
+    </button>
 
-    </div>
+  </div>
+
+  <!-- Mobile Menu Content (New) -->
+  <div class="fcx-mobile-menu" *ngIf="mobileMenuOpen">
+    <ng-container *ngIf="!isLoggedIn">
+      <a routerLink="/login" class="fcx-mobile-item" (click)="closeMobileMenu()">Login</a>
+      <a routerLink="/register" class="fcx-mobile-item" (click)="closeMobileMenu()">Register</a>
+    </ng-container>
+
+    <ng-container *ngIf="isLoggedIn">
+      <!-- Role-specific Mobile Items -->
+      <ng-container *ngIf="isFarmer && !isFarmerDashboard">
+        <a routerLink="/dashboard" class="fcx-mobile-item" (click)="closeMobileMenu()">Dashboard</a>
+        <a routerLink="/products/my" class="fcx-mobile-item" (click)="closeMobileMenu()">My Products</a>
+        <a routerLink="/marketplace" class="fcx-mobile-item" (click)="closeMobileMenu()">Marketplace</a>
+      </ng-container>
+
+      <ng-container *ngIf="isConsumer && !isConsumerDashboard">
+        <a routerLink="/consumer/dashboard" class="fcx-mobile-item" (click)="closeMobileMenu()">Consumer Panel</a>
+        <a routerLink="/consumer/marketplace" class="fcx-mobile-item" (click)="closeMobileMenu()">Marketplace</a>
+        <a routerLink="/consumer/verify" class="fcx-mobile-item" (click)="closeMobileMenu()">Product Scanner</a>
+      </ng-container>
+
+      <ng-container *ngIf="isDistributor && !isDistributorDashboard">
+        <a routerLink="/distributor/procurement" class="fcx-mobile-item" (click)="closeMobileMenu()">Procurement</a>
+        <a routerLink="/distributor/logistics" class="fcx-mobile-item" (click)="closeMobileMenu()">Logistics</a>
+      </ng-container>
+
+      <ng-container *ngIf="isRetailer && !isRetailerDashboard">
+        <a routerLink="/retailer/dashboard" class="fcx-mobile-item" (click)="closeMobileMenu()">Dashboard</a>
+        <a routerLink="/retailer/inventory" class="fcx-mobile-item" (click)="closeMobileMenu()">Inventory</a>
+        <a routerLink="/retailer/market" class="fcx-mobile-item" (click)="closeMobileMenu()">Market</a>
+      </ng-container>
+
+      <a *ngIf="!isFarmer && !isConsumer" routerLink="/scanner" class="fcx-mobile-item"
+        (click)="closeMobileMenu()">Scan</a>
+      <a *ngIf="isFarmer" routerLink="/upload" class="fcx-mobile-item" (click)="closeMobileMenu()">Upload</a>
+      <a *ngIf="isAdmin" routerLink="/admin" class="fcx-mobile-item" (click)="closeMobileMenu()">Admin</a>
+      <hr style="border:0; border-top:1px solid #f3f4f6; margin: 0.5rem 0;">
+      <a routerLink="/profile" class="fcx-mobile-item" (click)="closeMobileMenu()">Profile</a>
+      <button (click)="logout()" class="fcx-mobile-item"
+        style="text-align:left; background:transparent; border:none; width:100%; cursor:pointer; color:#ef4444;">Logout</button>
+    </ng-container>
   </div>
 </nav>

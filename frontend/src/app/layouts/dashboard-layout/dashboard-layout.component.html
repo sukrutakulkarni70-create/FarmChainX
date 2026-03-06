@@ -1,0 +1,30 @@
+<div class="flex h-screen flex-col relative overflow-hidden bg-slate-50">
+    <!-- Top Navbar -->
+    <div class="relative z-20">
+        <app-navbar></app-navbar>
+    </div>
+
+    <!-- Main Dashboard Area (Full Width) -->
+    <div class="flex-1 overflow-auto">
+        <div class="dashboard-container">
+            <router-outlet></router-outlet>
+        </div>
+    </div>
+</div>
+
+<style>
+    .dashboard-container {
+        width: 100%;
+        padding: 30px 40px;
+        max-width: 1600px;
+        /* Optional cap for extremely wide screens */
+        margin: 0 auto;
+        box-sizing: border-box;
+    }
+
+    @media (max-width: 768px) {
+        .dashboard-container {
+            padding: 20px 15px;
+        }
+    }
+</style>

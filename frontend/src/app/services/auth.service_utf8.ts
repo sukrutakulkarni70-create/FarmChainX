@@ -1,7 +1,5 @@
 ﻿import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { environment } from '../../environments/environment';
+import { BehaviorSubject } from 'rxjs';
 
 export type AuthState = {
   token: string | null;
@@ -22,12 +20,6 @@ export class AuthService {
 
   private _auth$ = new BehaviorSubject<AuthState>(initial);
   readonly auth$ = this._auth$.asObservable();
-
-  constructor(private http: HttpClient) { }
-
-  register(payload: any): Observable<any> {
-    return this.http.post(`${environment.apiUrl}/auth/register`, payload);
-  }
 
   // Current values
   get current() {
