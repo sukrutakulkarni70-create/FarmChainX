@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule, DecimalPipe, DatePipe } from '@angular/common';
+import { CommonModule, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
 import { ProductService } from '../../../services/product.service';
@@ -9,6 +9,7 @@ import { ProductService } from '../../../services/product.service';
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './inventory.component.html',
+  providers: [DecimalPipe]
 })
 export class InventoryComponent implements OnInit {
   inventoryItems: any[] = [];
@@ -25,16 +26,27 @@ export class InventoryComponent implements OnInit {
 
   loadInventory() {
     this.productService.getDistributorInventory().subscribe(items => {
-      this.inventoryItems = items || [];
+      // MOCK DATA: Ensures the team sees the bar even with an empty DB
+      if (!items || items.length === 0) {
+        this.inventoryItems = [{
+          cropName: 'Organic Sweet Corn',
+          productId: 'SC-101',
+          status: 'In Stock',
+          location: 'Warehouse A-12',
+          value: 45000,
+          quantity: 3500 // Result: 70% bar
+        }];
+      } else {
+        this.inventoryItems = items;
+      }
       this.totalValue = this.inventoryItems.reduce((acc, item) => acc + (item.value || 0), 0);
     });
   }
 
-  getGradeColor(grade: string): string {
-    if (!grade) return 'bg-gray-100 text-gray-800';
-    if (grade.includes('A')) return 'bg-emerald-100 text-emerald-800';
-    if (grade.includes('B')) return 'bg-yellow-100 text-yellow-800';
-    return 'bg-orange-100 text-orange-800';
+  // Logic for the progress bar width
+  getStockLevel(quantity: number): number {
+    const maxCapacity = 5000; 
+    return Math.min((quantity / maxCapacity) * 100, 100);
   }
 
   getStatusColor(status: string): string {
@@ -45,7 +57,6 @@ export class InventoryComponent implements OnInit {
   }
 
   goToDispatch(item: any) {
-    // Navigate to dispatch page with selected product data
     this.router.navigate(['/distributor/dispatch'], {
       state: { selectedProduct: item }
     });
