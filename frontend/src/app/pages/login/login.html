@@ -71,6 +71,10 @@
     <input class="fcx-input" [(ngModel)]="email" type="email" placeholder="Email Address" />
     <input class="fcx-input" [(ngModel)]="password" type="password" placeholder="Password" />
 
+    <div class="forgot-link">
+      <a routerLink="/forgot-password">Forgot Password?</a>
+    </div>
+
     <button class="fcx-btn" (click)="login()">Sign In</button>
 
     <p style="margin-top: 2rem; text-align: center; color: #6b7280;">

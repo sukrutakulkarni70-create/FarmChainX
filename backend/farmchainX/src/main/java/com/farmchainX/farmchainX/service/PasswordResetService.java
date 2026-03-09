@@ -11,7 +11,10 @@ import com.farmchainX.farmchainX.model.User;
 import com.farmchainX.farmchainX.repository.PasswordResetTokenRepository;
 import com.farmchainX.farmchainX.repository.UserRepository;
 
+import jakarta.transaction.Transactional;
+
 @Service
+@Transactional
 public class PasswordResetService {
 
     private final UserRepository userRepository;
@@ -20,9 +23,9 @@ public class PasswordResetService {
     private final PasswordEncoder passwordEncoder;
 
     public PasswordResetService(UserRepository userRepository,
-                                PasswordResetTokenRepository tokenRepository,
-                                EmailService emailService,
-                                PasswordEncoder passwordEncoder) {
+            PasswordResetTokenRepository tokenRepository,
+            EmailService emailService,
+            PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.tokenRepository = tokenRepository;
         this.emailService = emailService;
@@ -48,7 +51,17 @@ public class PasswordResetService {
 
             String resetLink = "http://localhost:4200/reset-password?token=" + token;
 
-            emailService.sendPasswordResetEmail(email, resetLink);
+            System.out.println("\n=======================================================");
+            System.out.println("⚠️ PASSWORD RESET LINK (For local testing):");
+            System.out.println(resetLink);
+            System.out.println("=======================================================\n");
+
+            try {
+                emailService.sendPasswordResetEmail(email, resetLink);
+            } catch (Exception e) {
+                System.err.println("Failed to send email (Check your application.properties for Gmail credentials): "
+                        + e.getMessage());
+            }
         });
     }
 

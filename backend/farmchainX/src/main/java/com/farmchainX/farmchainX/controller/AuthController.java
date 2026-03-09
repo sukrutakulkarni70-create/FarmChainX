@@ -42,6 +42,7 @@ public class AuthController {
 
     private final AuthService authService;
     private final PasswordResetService passwordResetService;
+
     @PostMapping("/register")
     @Operation(summary = "Register a new user")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest registerRequest) {
@@ -135,28 +136,30 @@ public class AuthController {
         errorResponse.put("message", e.getMessage() != null ? e.getMessage() : "Internal server error");
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }
+
     @PostMapping("/forgot-password")
-public ResponseEntity<?> forgotPassword(@RequestBody Map<String, String> body) {
+    public ResponseEntity<?> forgotPassword(@RequestBody Map<String, String> body) {
+        try {
+            String email = body.get("email");
+            passwordResetService.createPasswordResetToken(email);
+            return ResponseEntity.ok(
+                    Map.of("message", "If email exists, reset link sent"));
+        } catch (Exception e) {
+            log.error("Error during password reset: ", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                    Map.of("message", "Internal Error: " + e.getMessage()));
+        }
+    }
 
-    String email = body.get("email");
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> body) {
 
-    passwordResetService.createPasswordResetToken(email);
+        String token = body.get("token");
+        String newPassword = body.get("newPassword");
 
-    return ResponseEntity.ok(
-            Map.of("message", "If email exists, reset link sent")
-    );
-}
+        passwordResetService.resetPassword(token, newPassword);
 
-@PostMapping("/reset-password")
-public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> body) {
-
-    String token = body.get("token");
-    String newPassword = body.get("newPassword");
-
-    passwordResetService.resetPassword(token, newPassword);
-
-    return ResponseEntity.ok(
-            Map.of("message", "Password reset successful")
-    );
-}
+        return ResponseEntity.ok(
+                Map.of("message", "Password reset successful"));
+    }
 }
