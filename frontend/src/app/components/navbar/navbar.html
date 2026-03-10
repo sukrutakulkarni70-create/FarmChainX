@@ -450,7 +450,7 @@
       <ng-container *ngIf="isConsumer && !isConsumerDashboard">
         <a routerLink="/consumer/dashboard" routerLinkActive="active" class="fcx-menu-item">Consumer Panel</a>
         <a routerLink="/consumer/marketplace" routerLinkActive="active" class="fcx-menu-item">Marketplace</a>
-        <a routerLink="/consumer/verify" routerLinkActive="active" class="fcx-menu-item">Product Scanner</a>
+        <a routerLink="/scanner" routerLinkActive="active" class="fcx-menu-item">Product Scanner</a>
       </ng-container>
 
       <!-- Distributor Navigation -->
@@ -507,7 +507,8 @@
           <div *ngIf="showNotifications" class="fcx-notif-dropdown" (click)="$event.stopPropagation()">
             <div class="fcx-notif-header">Notifications</div>
             <div *ngIf="notifications.length === 0" class="fcx-notif-empty">No new notifications</div>
-            <div *ngFor="let n of displayedNotifications" class="fcx-notif-item" (click)="markRead(n.id); $event.stopPropagation()">
+            <div *ngFor="let n of displayedNotifications" class="fcx-notif-item"
+              (click)="markRead(n.id); $event.stopPropagation()">
               <div class="fcx-notif-item-title">{{ n.title }}</div>
               <div class="fcx-notif-item-msg">{{ n.message }}</div>
             </div>
@@ -579,7 +580,7 @@
       <ng-container *ngIf="isConsumer && !isConsumerDashboard">
         <a routerLink="/consumer/dashboard" class="fcx-mobile-item" (click)="closeMobileMenu()">Consumer Panel</a>
         <a routerLink="/consumer/marketplace" class="fcx-mobile-item" (click)="closeMobileMenu()">Marketplace</a>
-        <a routerLink="/consumer/verify" class="fcx-mobile-item" (click)="closeMobileMenu()">Product Scanner</a>
+        <a routerLink="/scanner" class="fcx-mobile-item" (click)="closeMobileMenu()">Product Scanner</a>
       </ng-container>
 
       <ng-container *ngIf="isDistributor && !isDistributorDashboard">

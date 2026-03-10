@@ -1,404 +1,404 @@
-<div class="min-h-screen bg-gradient-to-br from-slate-950 via-emerald-950 to-black text-white overflow-hidden">
-  <div class="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
-    <div
-      class="absolute top-0 left-0 w-96 h-96 bg-emerald-700 rounded-full mix-blend-multiply blur-3xl opacity-50 animate-blob">
-    </div>
-    <div
-      class="absolute bottom-0 right-0 w-96 h-96 bg-lime-600 rounded-full mix-blend-multiply blur-3xl opacity-40 animate-blob animation-delay-2000">
-    </div>
-    <div
-      class="absolute top-1/2 left-1/2 -translate-x-1/2 w-80 h-80 bg-teal-700 rounded-full mix-blend-multiply blur-3xl opacity-30 animate-blob animation-delay-4000">
+<div class="min-h-screen bg-gray-50 text-gray-900 pb-16">
+
+  <!-- Loading Overlay -->
+  <div *ngIf="loading" class="fixed inset-0 bg-white/80 backdrop-blur-md flex items-center justify-center z-50">
+    <div class="text-center flex flex-col items-center">
+      <div class="animate-spin rounded-full h-16 w-16 border-4 border-emerald-200 border-t-emerald-600 mb-6"></div>
+      <p class="text-xl font-bold text-gray-800">Verifying Product Origin...</p>
+      <p class="text-sm text-gray-500 mt-2">Connecting to the FarmChainX ledger</p>
     </div>
   </div>
 
-  <div *ngIf="loading" class="fixed inset-0 bg-black/80 backdrop-blur-xl flex items-center justify-center z-50">
-    <div class="text-center">
-      <div class="animate-spin rounded-full h-28 w-28 border-t-8 border-b-8 border-emerald-500 mx-auto mb-8"></div>
-      <p class="text-4xl font-black text-emerald-400">Verifying on Database...</p>
-    </div>
-  </div>
-
-  <div *ngIf="error" class="flex items-center justify-center min-h-screen px-6">
-    <div class="text-center">
-      <div class="text-9xl mb-8 opacity-30">Warning</div>
-      <h1 class="text-7xl font-black text-red-500 mb-6">Invalid QR Code</h1>
-      <p class="text-2xl text-gray-400">{{ error }}</p>
-      <p class="text-xl text-gray-500 mt-6">This product is not registered on FarmChainX</p>
-    </div>
-  </div>
-
-  <div *ngIf="product" class="max-w-7xl mx-auto px-6 py-12">
-    <div class="backdrop-blur-xl bg-white/5 border border-white/10 rounded-3xl shadow-2xl overflow-hidden">
-      <div class="relative h-96 md:h-screen md:max-h-[80vh]">
-        <img [src]="getImageUrl(product.imageUrl)" [alt]="product.cropName"
-          class="w-full h-full object-cover brightness-75" />
-        <div class="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent"></div>
-        <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div class="text-[200px] md:text-[340px] drop-shadow-2xl animate-pulse">
-            {{ getCropEmoji() }}
-          </div>
-        </div>
-        <div class="absolute bottom-12 left-8 md:left-16 right-8 z-20">
-          <div
-            class="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 mb-6 w-fit">
-            <div class="w-3 h-3 rounded-full bg-green-500 animate-pulse"></div>
-            <span class="text-sm font-bold uppercase tracking-widest text-white/90">Verified Product</span>
-          </div>
-          <h1
-            class="text-6xl md:text-9xl font-black leading-none drop-shadow-2xl text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-300">
-            {{ product.cropName | titlecase }}
-          </h1>
-          <p class="text-2xl md:text-4xl mt-4 opacity-90 font-light text-slate-200">
-            Harvested on <span class="font-bold text-emerald-300">{{ product.harvestDate | date : 'longDate' }}</span>
-          </p>
-        </div>
-
-        <!-- Back Button Overlay -->
-        <a routerLink="/verify/scan"
-          class="absolute top-8 left-8 z-50 p-4 rounded-full bg-black/20 hover:bg-black/40 backdrop-blur-md border border-white/10 transition-all hover:scale-110 cursor-pointer">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white">
-            <path d="m15 18-6-6 6-6" />
+  <!-- Error State -->
+  <div *ngIf="error" class="flex items-center justify-center min-h-[80vh] px-4">
+    <div class="text-center max-w-md w-full bg-white p-8 rounded-2xl shadow-lg border border-red-100">
+      <div class="w-20 h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-6">
+        <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+      </div>
+      <h1 class="text-2xl font-bold text-gray-900 mb-3">Verification Failed</h1>
+      <p class="text-gray-600">{{ error }}</p>
+      <div class="mt-8">
+        <a routerLink="/scanner"
+          class="inline-flex items-center justify-center w-full px-5 py-3 text-sm font-semibold text-white transition-colors bg-emerald-600 rounded-xl hover:bg-emerald-700 shadow-sm gap-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
           </svg>
+          Scan Another Item
         </a>
       </div>
-
-      <div class="flex justify-center -mt-28 mb-16 relative z-10">
-        <div
-          class="backdrop-blur-xl bg-gradient-to-br from-emerald-500/90 to-teal-600/90 px-16 py-12 rounded-3xl border-8 border-white/30 shadow-2xl">
-          <div
-            class="text-9xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-white/50 filter drop-shadow-lg">
-            {{ product.qualityGrade || 'A+' }}</div>
-          <div class="text-2xl font-bold text-emerald-100 mt-2 flex items-center gap-2 justify-center">
-            <span class="inline-block w-3 h-3 rounded-full bg-emerald-400 animate-pulse"></span>
-            AI Certified • {{ product.confidence | number : '1.0-0' }}% Confidence
-          </div>
-        </div>
-      </div>
-
-      <div class="grid md:grid-cols-2 gap-10 px-8 md:px-20 mb-20">
-        <div class="backdrop-blur-md bg-white/10 rounded-3xl p-10 text-center border border-white/20">
-          <p class="text-gray-400 uppercase tracking-widest mb-6 font-bold text-sm">Farm Origin</p>
-          <p class="text-3xl md:text-4xl font-black text-white break-words">{{ displayLocation || 'Protected Location'
-            }}</p>
-        </div>
-        <div class="backdrop-blur-md bg-white/10 rounded-3xl p-10 text-center border border-white/20">
-          <p class="text-gray-400 uppercase tracking-widest mb-6 font-bold text-sm">Blockchain Ledger ID</p>
-          <p
-            class="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-200">
-            #{{ product.productId }}</p>
-          <div class="mt-6 p-4 bg-black/30 rounded-xl border border-white/5">
-            <p class="text-xs font-mono text-emerald-500/70 mb-1">UUID Hash</p>
-            <p
-              class="text-sm font-mono text-gray-300 break-all select-all hover:text-white transition-colors cursor-text">
-              {{ product.publicUuid }}</p>
-          </div>
-        </div>
-      </div>
-      <div class="px-8 md:px-20 mb-24">
-  <div class="backdrop-blur-xl bg-white/5 border border-white/10 rounded-3xl p-12 shadow-2xl">
-    
-    <h2 class="text-5xl font-black mb-12 text-center 
-      bg-gradient-to-r from-emerald-400 to-lime-400 bg-clip-text text-transparent">
-      Product Details
-    </h2>
-
-    <div class="grid md:grid-cols-2 gap-10 text-xl">
-
-      <div>
-        <p class="text-gray-400 uppercase text-sm mb-2">Batch ID</p>
-        <p class="text-2xl font-bold text-white">{{ product.batchId }}</p>
-      </div>
-
-      <div>
-        <p class="text-gray-400 uppercase text-sm mb-2">Expiry Date</p>
-        <p class="text-2xl font-bold text-white">
-          {{ product.expiryDate | date:'longDate' }}
-        </p>
-      </div>
-
-      <div>
-        <p class="text-gray-400 uppercase text-sm mb-2">Soil Type</p>
-        <p class="text-2xl font-bold text-white">{{ product.soilType }}</p>
-      </div>
-
-      <div>
-        <p class="text-gray-400 uppercase text-sm mb-2">Pesticides Used</p>
-        <p class="text-2xl font-bold text-white">{{ product.pesticides }}</p>
-      </div>
-
-      <div>
-        <p class="text-gray-400 uppercase text-sm mb-2">Quantity</p>
-        <p class="text-2xl font-bold text-white">
-          {{ product.quantity }} {{ product.quantityUnit }}
-        </p>
-      </div>
-
-      <div>
-        <p class="text-gray-400 uppercase text-sm mb-2">Price</p>
-        <p class="text-2xl font-bold text-white">
-          ₹{{ product.price }}
-        </p>
-      </div>
-
-      <div class="md:col-span-2">
-        <p class="text-gray-400 uppercase text-sm mb-2">Exact Farm Address</p>
-        <p class="text-2xl font-bold text-white break-words">
-          {{ product.address }}
-        </p>
-      </div>
-
     </div>
   </div>
-</div>
+
+  <div *ngIf="product" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+    <!-- Back Button & Header -->
+    <div class="mb-6 flex items-center justify-between">
+      <a routerLink="/scanner"
+        class="inline-flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-emerald-600 transition-colors bg-white px-4 py-2 rounded-lg shadow-sm border border-gray-100">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        Back to Scanner
+      </a>
 
       <div
-        class="py-24 text-center bg-gradient-to-r from-emerald-900/40 via-teal-900/40 to-emerald-900/40 border-y border-emerald-500/20 backdrop-blur-sm relative overflow-hidden group">
-        <div class="absolute inset-0 bg-emerald-500/5 group-hover:bg-emerald-500/10 transition-colors duration-700">
-        </div>
-        <div class="relative z-10">
-          <div class="text-8xl mb-8 animate-float inline-block">🔒</div>
-          <h2
-            class="text-6xl md:text-8xl font-black mb-6 bg-gradient-to-r from-emerald-200 via-white to-emerald-200 bg-clip-text text-transparent drop-shadow-2xl">
-            100% Authentic
-          </h2>
-          <p class="text-2xl md:text-3xl text-emerald-200/80 font-light tracking-widest uppercase">
-            Tamper-Proof • Immutable • Transparent
-          </p>
-        </div>
-      </div>
-
-      <div class="px-8 md:px-20 py-24 relative">
-        <div
-          class="absolute inset-0 bg-gradient-to-b from-transparent via-emerald-900/10 to-transparent pointer-events-none">
-        </div>
-        <h2
-          class="text-6xl font-black text-center mb-24 text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300">
-          Supply Chain Journey
-        </h2>
-        <div class="space-y-16 max-w-5xl mx-auto relative z-10">
-          <div *ngFor="let log of product.trackingHistory; let i = index"
-            class="flex gap-10 md:gap-16 items-start group">
-
-            <div class="flex flex-col items-center">
-              <div
-                class="w-24 h-24 bg-slate-900 rounded-2xl flex items-center justify-center text-4xl font-black shadow-[0_0_30px_rgba(16,185,129,0.3)] border-2 border-emerald-500/50 z-20 group-hover:scale-110 group-hover:border-emerald-400 transition-all duration-300 relative">
-                <span class="bg-gradient-to-br from-emerald-400 to-teal-500 bg-clip-text text-transparent">{{ i + 1
-                  }}</span>
-                <div
-                  class="absolute inset-0 bg-emerald-500/20 blur-xl -z-10 opacity-0 group-hover:opacity-100 transition-opacity">
-                </div>
-              </div>
-              <div *ngIf="i < product.trackingHistory.length - 1"
-                class="w-1 bg-gradient-to-b from-emerald-500 to-slate-800 h-full min-h-[120px] -mt-2 opacity-40"></div>
-            </div>
-
-            <div
-              class="flex-1 backdrop-blur-xl bg-white/5 rounded-3xl p-10 border border-white/10 hover:border-emerald-500/30 hover:bg-white/10 transition-all duration-300 shadow-2xl relative overflow-hidden">
-              <div class="absolute top-0 right-0 p-6 opacity-10">
-                <div class="text-8xl">📍</div>
-              </div>
-
-              <h3 class="text-4xl font-bold mb-4 text-white group-hover:text-emerald-300 transition-colors">
-                {{ log.location || 'Farm Origin' }}
-              </h3>
-
-              <div class="flex items-center gap-4 mb-6 text-emerald-200/60 font-mono text-lg">
-                <span class="px-4 py-1 rounded-full bg-emerald-900/50 border border-emerald-500/20">
-                  {{ log.timestamp | date : 'medium' }}
-                </span>
-              </div>
-
-              <p class="text-2xl leading-relaxed text-slate-300 font-light">
-                {{ log.notes || 'Product entered supply chain' }}
-              </p>
-
-              <div class="mt-8 pt-8 border-t border-white/5 flex justify-between items-end">
-                <div class="text-emerald-400/80 font-medium">
-                  <span class="text-xs uppercase tracking-widest text-slate-500 block mb-1">Processed By</span>
-                  {{ actorFromLog(log) }}
-                </div>
-
-                <div *ngIf="log.confirmed"
-                  class="flex items-center gap-2 text-emerald-400 bg-emerald-400/10 px-6 py-2 rounded-full border border-emerald-400/20">
-                  <span>✓</span> <span class="text-sm font-bold uppercase tracking-wider">Confirmed</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="px-8 md:px-20 py-20">
-        <div class="max-w-4xl mx-auto backdrop-blur-2xl bg-white/10 rounded-3xl p-12 border border-white/20 shadow-2xl">
-          <h2
-            class="text-5xl font-black text-center mb-12 bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-lime-400">
-            Consumer Reviews
-          </h2>
-
-          <div *ngIf="feedbacks?.length === 0" class="text-center py-16">
-            <p class="text-3xl font-bold text-gray-300">No feedback yet</p>
-            <p class="text-xl text-gray-400 mt-4">Be the first to review this product!</p>
-          </div>
-
-          <div *ngFor="let fb of feedbacks" class="mb-10 p-8 bg-white/5 rounded-2xl border border-white/10">
-            <div class="flex justify-between items-start mb-4">
-              <div>
-                <div class="text-4xl font-black text-emerald-400">Rating: {{ fb.rating }}/5</div>
-                <p class="text-gray-400 mt-2">{{ fb.createdAt | date : 'medium' }}</p>
-              </div>
-              <div class="text-sm text-gray-500">User #{{ fb.consumerId }}</div>
-            </div>
-            <p class="text-xl leading-relaxed text-gray-200">{{ fb.comment }}</p>
-          </div>
-
-          <div *ngIf="userRole === 'Consumer' && !consumerCanGiveFeedback && currentUserId" class="text-center py-16">
-            <p class="text-2xl font-medium text-gray-300">
-              You have already submitted feedback for this product.
-            </p>
-          </div>
-
-          <div *ngIf="userRole === 'Consumer' && consumerCanGiveFeedback" class="mt-12 pt-12 border-t border-white/20">
-            <h3 class="text-4xl font-black text-center mb-10 text-emerald-400">
-              Leave Your Review
-            </h3>
-            <div class="grid md:grid-cols-2 gap-8 mb-10">
-              <div class="text-center">
-                <label class="block text-xl font-bold text-gray-300 mb-4">Your Rating</label>
-                <input type="number" min="1" max="5" [(ngModel)]="myRating"
-                  class="w-32 px-6 py-6 bg-white/10 border-2 border-white/30 rounded-2xl text-4xl text-center font-bold focus:border-emerald-400 focus:ring-4 focus:ring-emerald-500/30 transition" />
-              </div>
-              <div>
-                <label class="block text-xl font-bold text-gray-300 mb-4">Your Comment</label>
-                <textarea [(ngModel)]="myComment" rows="5" placeholder="Share your experience..."
-                  class="w-full px-8 py-6 bg-white/10 border-2 border-white/30 rounded-2xl text-xl resize-none focus:border-emerald-400 focus:ring-4 focus:ring-emerald-500/30 transition"></textarea>
-              </div>
-            </div>
-            <div class="text-center">
-              <button (click)="submitFeedback()"
-                class="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-black text-3xl py-8 px-24 rounded-3xl shadow-2xl transform hover:scale-105 transition">
-                Submit Feedback
-              </button>
-            </div>
-          </div>
-
-          <div *ngIf="currentUserId && userRole !== 'Consumer'" class="text-center text-gray-400 mt-6">
-            Only consumers can submit feedback.
-          </div>
-
-          <div *ngIf="!currentUserId" class="text-center text-gray-400 mt-6">
-            Sign in as a Consumer to submit feedback. You can still read reviews above.
-          </div>
-        </div>
-      </div>
-
-      <div *ngIf="showUpdatePossible()" class="px-8 md:px-20 py-32">
-        <div class="max-w-5xl mx-auto text-center space-y-12">
-          <div *ngIf="userRole === 'Distributor' && !hasDistributorTakenPossession()">
-            <h2 class="text-5xl font-black text-orange-400 mb-8">First Time Scanning</h2>
-            <p class="text-2xl text-gray-300 mb-12 max-w-2xl mx-auto">
-              By clicking below, you confirm that you have physically received this product from the
-              farmer.
-            </p>
-            <button (click)="openForm('update')"
-              class="px-16 py-10 rounded-3xl text-5xl font-black bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 border-8 border-white/40 shadow-3xl transform hover:scale-105 transition">
-              I Have Taken From Farmer
-            </button>
-          </div>
-
-          <div *ngIf="userRole === 'Distributor' && hasDistributorTakenPossession()" class="space-y-10">
-            <div class="inline-flex flex-wrap justify-center gap-8">
-              <button (click)="openForm('update')"
-                class="px-10 py-6 rounded-3xl text-3xl font-black bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 border-4 border-white/30 shadow-2xl transform hover:scale-105 transition">
-                + Add Tracking Update
-              </button>
-
-              <button (click)="openForm('handover')"
-                class="px-10 py-6 rounded-3xl text-3xl font-black bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 hover:from-pink-700 hover:via-purple-700 hover:to-indigo-700 border-4 border-white/30 shadow-2xl transform hover:scale-105 transition">
-                FINAL HANDOVER TO RETAILER
-              </button>
-            </div>
-            <p class="text-2xl text-gray-300">
-              You have confirmed possession • You can now update or handover
-            </p>
-          </div>
-
-          <div *ngIf="userRole === 'Retailer'">
-            <h2 class="text-5xl font-black text-cyan-400 mb-8">Pending Receipt</h2>
-            <p class="text-2xl text-gray-300 mb-12">
-              Distributor has handed over this product to you
-            </p>
-            <button (click)="openForm('update')"
-              class="px-16 py-10 rounded-3xl text-5xl font-black bg-gradient-to-r from-cyan-600 to-blue-700 hover:from-cyan-700 hover:to-blue-800 border-8 border-white/40 shadow-3xl transform hover:scale-105 transition">
-              Confirm Receipt
-            </button>
-          </div>
-        </div>
-
-        <div *ngIf="showAddForm"
-          class="mt-16 backdrop-blur-2xl bg-white/10 rounded-3xl p-16 border-4 border-white/20 shadow-3xl">
-          <div *ngIf="mode === 'handover'" class="mb-12">
-            <label class="block text-4xl font-black text-center mb-8 text-pink-400">Select Retailer</label>
-            <select [(ngModel)]="selectedRetailerId" required
-              class="w-full px-12 py-10 text-3xl bg-white/10 border-4 border-pink-500/50 rounded-3xl text-center font-bold focus:border-pink-400 focus:ring-8 focus:ring-pink-500/30 transition">
-              <option [ngValue]="null" disabled>Select retailer...</option>
-              <option *ngFor="let r of retailers" [ngValue]="r.id">
-                {{ r.name }} ({{ r.email }})
-              </option>
-            </select>
-          </div>
-
-          <div class="space-y-12">
-            <input [(ngModel)]="newLocation" placeholder="Current Location / Action Taken" required
-              class="w-full px-12 py-10 text-4xl bg-white/10 border-4 border-white/30 rounded-3xl placeholder-gray-500 text-center font-bold focus:border-emerald-400 focus:ring-8 focus:ring-emerald-500/30 transition" />
-
-            <textarea [(ngModel)]="newNote" rows="4" placeholder="Additional notes (optional)"
-              class="w-full px-12 py-10 text-2xl bg-white/10 border-4 border-white/30 rounded-3xl placeholder-gray-500 resize-none focus:border-emerald-400 focus:ring-8 focus:ring-emerald-500/30 transition"></textarea>
-          </div>
-
-          <div class="mt-16 text-center">
-            <div class="inline-flex gap-8">
-              <button (click)="submitChainUpdate()" [disabled]="mode === 'handover' && !selectedRetailerId"
-                class="px-16 py-10 rounded-3xl text-4xl font-black border-8 border-white/40 shadow-3xl transform hover:scale-105 transition"
-                [ngClass]="{
-                  'bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700':
-                    !hasDistributorTakenPossession() && userRole === 'Distributor',
-                  'bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 hover:from-pink-700 hover:via-purple-700 hover:to-indigo-700':
-                    mode === 'handover',
-                  'bg-gradient-to-r from-cyan-600 to-blue-700 hover:from-cyan-700 hover:to-blue-800':
-                    userRole === 'Retailer',
-                  'bg-gradient-to-r from-emerald-600 to-lime-600 hover:from-emerald-700 hover:to-lime-700':
-                    mode === 'update' && hasDistributorTakenPossession()
-                }">
-                {{
-                !hasDistributorTakenPossession() && userRole === 'Distributor'
-                ? 'CONFIRM TAKEN FROM FARMER'
-                : mode === 'handover'
-                ? 'HANDOVER TO RETAILER'
-                : userRole === 'Retailer'
-                ? 'CONFIRM RECEIPT'
-                : 'UPDATE DATABASE'
-                }}
-              </button>
-              <button (click)="cancelForm()"
-                class="px-16 py-10 rounded-3xl text-4xl font-black bg-white/10 hover:bg-white/20 border-8 border-white/30">
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div *ngIf="!showUpdatePossible() && (userRole === 'Distributor' || userRole === 'Retailer')"
-        class="px-8 md:px-20 py-32 text-center">
-        <p class="text-5xl font-black text-gray-500">
-          {{
-          userRole === 'Distributor'
-          ? 'You have already handed over this product to a retailer'
-          : 'You have already confirmed receipt of this product'
-          }}
-        </p>
+        class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 text-sm font-bold border border-emerald-100 shadow-sm">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        Verified Authentic
       </div>
     </div>
+
+    <!-- Product Hero Card -->
+    <div class="bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden mb-8">
+      <div class="grid md:grid-cols-2">
+        <!-- Image Side -->
+        <div class="relative h-64 md:h-auto bg-gray-100 flex items-center justify-center p-8">
+          <img [src]="getImageUrl(product.imageUrl)" [alt]="product.cropName"
+            class="w-full h-full object-cover absolute inset-0 mix-blend-overlay opacity-40">
+          <div class="relative z-10 text-9xl drop-shadow-lg">
+            {{ getCropEmoji() }}
+          </div>
+
+          <div class="absolute bottom-4 left-4 right-4 z-20">
+            <div
+              class="backdrop-blur-md bg-white/80 p-4 rounded-xl shadow-lg border border-white flex justify-between items-center">
+              <div>
+                <p class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">AI Quality Grade</p>
+                <div class="flex items-center gap-2">
+                  <span class="text-2xl font-black text-emerald-600">{{ product.qualityGrade || 'A+' }}</span>
+                  <span class="text-sm font-medium text-gray-600 border-l border-gray-300 pl-2">Confidence: {{
+                    product.confidence | number : '1.0-0' }}%</span>
+                </div>
+              </div>
+              <div class="w-12 h-12 bg-emerald-50 rounded-full flex items-center justify-center text-emerald-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z">
+                  </path>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Details Side -->
+        <div class="p-8 md:p-12 flex flex-col justify-center">
+          <p class="text-sm font-bold text-emerald-600 uppercase tracking-wider mb-2">Harvested on {{
+            product.harvestDate | date : 'mediumDate' }}</p>
+          <h1 class="text-4xl lg:text-5xl font-extrabold text-gray-900 mb-6 leading-tight">{{ product.cropName |
+            titlecase }}</h1>
+
+          <div class="space-y-6">
+            <div>
+              <p class="text-sm font-medium text-gray-500 mb-1">Origin Location</p>
+              <p class="text-lg font-semibold text-gray-800 flex items-start gap-2">
+                <svg class="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor"
+                  viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                </svg>
+                {{ displayLocation || 'Protected Farm Location' }}
+              </p>
+              <p class="text-sm text-gray-500 mt-1 pl-7">{{ product.address }}</p>
+            </div>
+
+            <div class="bg-gray-50 p-4 rounded-xl border border-gray-100">
+              <p class="text-xs text-gray-500 font-semibold uppercase tracking-wider mb-1">Blockchain Tracking ID</p>
+              <p
+                class="text-base font-mono text-gray-800 break-all bg-white p-2 rounded border border-gray-200 shadow-sm">
+                {{ product.publicUuid }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid lg:grid-cols-3 gap-8 mb-10">
+      <!-- Product Specifications -->
+      <div class="lg:col-span-1 bg-white rounded-3xl shadow-sm border border-gray-200 p-8 h-fit">
+        <h3 class="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+          <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+            </path>
+          </svg>
+          Specifications
+        </h3>
+
+        <div class="space-y-5">
+          <div class="flex justify-between items-center pb-4 border-b border-gray-100">
+            <span class="text-gray-500 font-medium text-sm">Batch ID</span>
+            <span class="font-bold text-gray-900">{{ product.batchId }}</span>
+          </div>
+          <div class="flex justify-between items-center pb-4 border-b border-gray-100">
+            <span class="text-gray-500 font-medium text-sm">Expiry Date</span>
+            <span class="font-bold text-gray-900">{{ product.expiryDate | date:'mediumDate' }}</span>
+          </div>
+          <div class="flex justify-between items-center pb-4 border-b border-gray-100">
+            <span class="text-gray-500 font-medium text-sm">Quantity</span>
+            <span class="font-bold text-gray-900">{{ product.quantity }} {{ product.quantityUnit }}</span>
+          </div>
+          <div class="flex justify-between items-center pb-4 border-b border-gray-100">
+            <span class="text-gray-500 font-medium text-sm">Price</span>
+            <span class="font-bold text-emerald-600">₹{{ product.price }}</span>
+          </div>
+          <div class="flex flex-col gap-1 pb-4 border-b border-gray-100">
+            <span class="text-gray-500 font-medium text-sm">Farming Method</span>
+            <span class="font-bold text-gray-900">{{ product.pesticides }} / {{ product.soilType }} Soil</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Supply Chain Journey -->
+      <div class="lg:col-span-2 bg-white rounded-3xl shadow-sm border border-gray-200 p-8">
+        <h3 class="text-xl font-bold text-gray-900 mb-8 flex items-center gap-2">
+          <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+          </svg>
+          Journey Timeline
+        </h3>
+
+        <div class="relative pl-4 space-y-8">
+          <!-- Timeline line -->
+          <div class="absolute left-7 top-4 bottom-4 w-0.5 bg-gray-100"></div>
+
+          <div *ngFor="let log of product.trackingHistory; let i = index; let last = last"
+            class="relative z-10 flex gap-6">
+            <!-- Timeline node -->
+            <div class="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs"
+              [ngClass]="last ? 'bg-emerald-100 text-emerald-600 ring-4 ring-white' : 'bg-gray-200 text-gray-600 ring-4 ring-white'">
+              {{ i + 1 }}
+            </div>
+
+            <!-- Content -->
+            <div class="flex-grow pt-0.5">
+              <div
+                class="bg-gray-50 rounded-2xl p-5 border border-gray-100 hover:border-emerald-200 hover:shadow-md transition-all">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
+                  <h4 class="text-lg font-bold text-gray-900">{{ log.location || 'Farm Origin' }}</h4>
+                  <span class="text-xs font-medium text-gray-500 bg-white px-2 py-1 rounded-md border border-gray-200">
+                    {{ log.timestamp | date : 'MMM d, y, h:mm a' }}
+                  </span>
+                </div>
+
+                <p class="text-gray-600 text-sm mb-4">{{ log.notes || 'Product entered supply chain' }}</p>
+
+                <div class="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-gray-200">
+                  <div class="flex items-center gap-2">
+                    <div
+                      class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs font-bold">
+                      {{ actorFromLog(log).charAt(0).toUpperCase() }}
+                    </div>
+                    <span class="text-xs font-semibold text-gray-600">By: {{ actorFromLog(log) }}</span>
+                  </div>
+
+                  <div *ngIf="log.confirmed"
+                    class="flex items-center gap-1.5 text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-100">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    CONFIRMED
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Consumer Reviews Section -->
+    <div class="bg-white rounded-3xl shadow-sm border border-gray-200 p-8 mb-10">
+      <h3 class="text-xl font-bold text-gray-900 mb-8 flex items-center gap-2">
+        <svg class="w-5 h-5 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+          <path
+            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
+          </path>
+        </svg>
+        Consumer Reviews
+      </h3>
+
+      <div *ngIf="feedbacks?.length === 0"
+        class="text-center py-10 bg-gray-50 rounded-2xl border border-gray-100 border-dashed">
+        <div class="text-4xl mb-3">⭐</div>
+        <p class="text-lg font-bold text-gray-700">No reviews yet</p>
+        <p class="text-sm text-gray-500 mt-1">Be the first to share your experience.</p>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-6">
+        <div *ngFor="let fb of feedbacks" class="bg-gray-50 p-6 rounded-2xl border border-gray-100 flex flex-col gap-3">
+          <div class="flex justify-between items-start">
+            <div class="flex gap-1 text-yellow-400">
+              <svg *ngFor="let _ of [1,2,3,4,5]; let i = index" class="w-5 h-5"
+                [ngClass]="{'text-gray-300': i >= fb.rating}" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
+                </path>
+              </svg>
+            </div>
+            <span class="text-xs text-gray-400 font-medium">{{ fb.createdAt | date : 'mediumDate' }}</span>
+          </div>
+          <p class="text-gray-700 text-sm leading-relaxed flex-grow">"{{ fb.comment }}"</p>
+          <div class="text-xs text-gray-500 font-medium pt-3 border-t border-gray-200">Verified Consumer #{{
+            fb.consumerId }}</div>
+        </div>
+      </div>
+
+      <!-- Add Review Form -->
+      <div *ngIf="userRole === 'Consumer' && consumerCanGiveFeedback"
+        class="mt-8 bg-emerald-50 p-6 rounded-2xl border border-emerald-100">
+        <h4 class="font-bold text-emerald-800 mb-4">Leave Your Review</h4>
+        <div class="flex flex-col md:flex-row gap-6">
+          <div class="w-full md:w-1/3">
+            <label class="block text-sm font-semibold text-gray-700 mb-2">Rating (1-5)</label>
+            <select [(ngModel)]="myRating"
+              class="w-full p-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none">
+              <option [value]="5">5 - Excellent</option>
+              <option [value]="4">4 - Very Good</option>
+              <option [value]="3">3 - Good</option>
+              <option [value]="2">2 - Fair</option>
+              <option [value]="1">1 - Poor</option>
+            </select>
+          </div>
+          <div class="w-full md:w-2/3 flex flex-col gap-3">
+            <label class="block text-sm font-semibold text-gray-700 mb-2">Comment</label>
+            <textarea [(ngModel)]="myComment" rows="3" placeholder="How was the quality?"
+              class="w-full p-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none resize-none"></textarea>
+            <button (click)="submitFeedback()"
+              class="self-end px-6 py-2.5 bg-emerald-600 text-white font-bold rounded-xl hover:bg-emerald-700 transition shadow-sm">Submit
+              Review</button>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="userRole === 'Consumer' && !consumerCanGiveFeedback && currentUserId"
+        class="mt-8 p-4 bg-gray-50 rounded-xl text-center border border-gray-100">
+        <p class="text-sm font-medium text-gray-600">You have already submitted feedback for this product.</p>
+      </div>
+
+      <div *ngIf="currentUserId && userRole !== 'Consumer'" class="mt-8 text-center text-sm text-gray-500">
+        Only registered consumers can submit product feedback.
+      </div>
+
+      <div *ngIf="!currentUserId" class="mt-8 text-center text-sm text-gray-500">
+        Sign in as a Consumer to submit feedback. You can still read reviews above.
+      </div>
+    </div>
+
+    <!-- Actions for Actors (Distributor/Retailer) -->
+    <div *ngIf="showUpdatePossible()"
+      class="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 p-8 rounded-3xl shadow-sm mb-10">
+
+      <div *ngIf="!showAddForm" class="text-center max-w-2xl mx-auto space-y-6">
+
+        <!-- Distributor Actions -->
+        <ng-container *ngIf="userRole === 'Distributor'">
+          <div *ngIf="!hasDistributorTakenPossession()">
+            <h3 class="text-2xl font-bold text-gray-900 mb-3">Confirm Initial Receipt</h3>
+            <p class="text-gray-600 mb-6 text-sm">Please confirm that you have physically received this product from the
+              farmer location to begin your custody.</p>
+            <button (click)="openForm('update')"
+              class="px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-md transition transform hover:-translate-y-0.5 w-full sm:w-auto">
+              Confirm Receipt From Farmer
+            </button>
+          </div>
+
+          <div *ngIf="hasDistributorTakenPossession()" class="space-y-6">
+            <h3 class="text-2xl font-bold text-gray-900 mb-2">Update Supply Chain Status</h3>
+            <p class="text-gray-600 mb-6 text-sm">You currently have custody of this product. Add a transit update or
+              hand it over to a retailer.</p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+              <button (click)="openForm('update')"
+                class="px-6 py-3 bg-white border-2 border-blue-600 text-blue-700 hover:bg-blue-50 font-bold rounded-xl shadow-sm transition">
+                Add Transit Update
+              </button>
+              <button (click)="openForm('handover')"
+                class="px-6 py-3 bg-blue-600 text-white hover:bg-blue-700 font-bold rounded-xl shadow-md transition">
+                Handover to Retailer
+              </button>
+            </div>
+          </div>
+        </ng-container>
+
+        <!-- Retailer Actions -->
+        <ng-container *ngIf="userRole === 'Retailer'">
+          <div>
+            <h3 class="text-2xl font-bold text-gray-900 mb-3">Pending Retail Receipt</h3>
+            <p class="text-gray-600 mb-6 text-sm">The distributor has reportedly handed this product over to you. Please
+              confirm physical receipt in your store inventory.</p>
+            <button (click)="openForm('update')"
+              class="px-8 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-md transition transform hover:-translate-y-0.5 w-full sm:w-auto">
+              Confirm Store Receipt
+            </button>
+          </div>
+        </ng-container>
+
+      </div>
+
+      <!-- Action Form -->
+      <div *ngIf="showAddForm"
+        class="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-gray-200 mt-4 max-w-3xl mx-auto">
+        <h4 class="text-xl font-bold text-gray-900 mb-6 border-b border-gray-100 pb-4">
+          {{ mode === 'handover' ? 'Handover to Retailer' : 'Log Supply Chain Event' }}
+        </h4>
+
+        <div *ngIf="mode === 'handover'" class="mb-6">
+          <label class="block text-sm font-bold text-gray-700 mb-2">Select Destination Retailer <span
+              class="text-red-500">*</span></label>
+          <select [(ngModel)]="selectedRetailerId" required
+            class="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none font-medium text-gray-700">
+            <option [ngValue]="null" disabled>Choose a registered retailer...</option>
+            <option *ngFor="let r of retailers" [ngValue]="r.id">{{ r.name }} ({{ r.email }})</option>
+          </select>
+        </div>
+
+        <div class="space-y-6">
+          <div>
+            <label class="block text-sm font-bold text-gray-700 mb-2">Current Location / Status <span
+                class="text-red-500">*</span></label>
+            <input [(ngModel)]="newLocation" placeholder="e.g., Transit Hub A, or Reached Store" required
+              class="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none font-medium text-gray-700" />
+          </div>
+
+          <div>
+            <label class="block text-sm font-bold text-gray-700 mb-2">Additional Notes (Optional)</label>
+            <textarea [(ngModel)]="newNote" rows="3" placeholder="Condition notes, handler details, etc."
+              class="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none font-medium text-gray-700"></textarea>
+          </div>
+        </div>
+
+        <div class="mt-8 flex flex-col-reverse sm:flex-row justify-end gap-3">
+          <button (click)="cancelForm()"
+            class="px-6 py-3 bg-white border border-gray-300 text-gray-700 font-bold rounded-xl hover:bg-gray-50 transition w-full sm:w-auto">
+            Cancel
+          </button>
+          <button (click)="submitChainUpdate()" [disabled]="mode === 'handover' && !selectedRetailerId"
+            class="px-8 py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 shadow-sm transition disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto">
+            {{ mode === 'handover' ? 'Confirm Handover' : 'Submit Log Update' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="!showUpdatePossible() && (userRole === 'Distributor' || userRole === 'Retailer')"
+      class="bg-gray-50 p-6 rounded-2xl border border-gray-200 text-center mb-10">
+      <div class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 mx-auto mb-3">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+        </svg>
+      </div>
+      <p class="text-sm font-bold text-gray-700">No Pending Actions</p>
+      <p class="text-xs text-gray-500 mt-1">
+        {{ userRole === 'Distributor' ? 'You have successfully handed over this product to a retailer.' : 'You have
+        confirmed receipt of this product.' }}
+      </p>
+    </div>
+
   </div>
 </div>
