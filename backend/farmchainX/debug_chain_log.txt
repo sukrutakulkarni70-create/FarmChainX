@@ -50,3 +50,5 @@
 2026-03-05T18:57:51.477910: updateChain called with payload: {productId=3, location=Distributor Warehouse (Initial), notes=Distributor collected from farmer, toUserId=null}
 2026-03-05T18:58:04.529205700: updateChain called with payload: {productId=3, toUserId=5, location=Distributor Warehouse → Retailer, notes=Handover to Retailer}
 2026-03-05T19:03:45.400256100: updateChain called with payload: {productId=3, location=Retailer Store (Received), notes=Retailer Confirmed Receipt}
+2026-03-09T17:56:25.865384800: updateChain called with payload: {productId=5, location=Distributor Warehouse (Initial), notes=Distributor collected from farmer, toUserId=null}
+2026-03-09T17:58:01.775361800: updateChain called with payload: {productId=5, toUserId=5, location=Distributor Warehouse → Retailer, notes=Handover to Retailer}

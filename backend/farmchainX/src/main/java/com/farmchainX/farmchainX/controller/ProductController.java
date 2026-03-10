@@ -76,6 +76,20 @@ public class ProductController {
         this.retailerInventoryRepository = retailerInventoryRepository;
         this.notificationService = notificationService;
     }
+    @PostMapping("/consumer/checkout/{productId}")
+@PreAuthorize("hasRole('CONSUMER')")
+public ResponseEntity<?> checkoutProduct(
+        @PathVariable Long productId,
+        Principal principal) {
+
+    User consumer = userRepository.findByEmail(principal.getName())
+            .orElseThrow(() -> new RuntimeException("Consumer not found"));
+
+    productService.markProductAsSold(productId, consumer.getId());
+
+    return ResponseEntity.ok(Map.of(
+            "message", "Product purchased successfully"));
+}
 
     @PostMapping("/products/upload")
     @PreAuthorize("hasRole('FARMER')")

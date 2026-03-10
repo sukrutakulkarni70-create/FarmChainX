@@ -32,6 +32,34 @@ public class ProductService {
     private final UserRepository userRepository;
     private final AiService aiService;
     private final SupplyChainLogRepository supplyChainLogRepository;
+    @Transactional
+public void markProductAsSold(Long productId, Long consumerId) {
+
+    Product product = productRepository.findById(productId)
+            .orElseThrow(() -> new RuntimeException("Product not found"));
+
+    SupplyChainLog log = new SupplyChainLog();
+    log.setProductId(productId);
+    log.setFromUserId(null);
+    log.setToUserId(consumerId);
+    log.setLocation("Consumer Purchase");
+    log.setNotes("Sold to Consumer");
+    log.setTimestamp(LocalDateTime.now());
+    log.setConfirmed(true);
+
+    String prevHash = supplyChainLogRepository
+            .findTopByProductIdOrderByTimestampDesc(productId)
+            .map(SupplyChainLog::getHash)
+            .orElse("");
+
+    log.setPrevHash(prevHash);
+    log.setHash(com.farmchainX.farmchainX.util.HashUtil.computeHash(log, prevHash));
+
+    supplyChainLogRepository.save(log);
+
+    product.setCurrentStatus("SOLD");
+    productRepository.save(product);
+}
 
     public ProductService(ProductRepository productRepository,
             UserRepository userRepository,
@@ -287,8 +315,8 @@ data.put("address", product.getAddress());
     }
 
     public List<Map<String, Object>> getMarketplaceProducts() {
-        return productRepository.findAll().stream()
-                .map(product -> {
+return productRepository.findAll().stream()
+        .filter(product -> !supplyChainLogRepository.existsByProductId(product.getId()))                .map(product -> {
                     boolean isSold = supplyChainLogRepository.existsByProductId(product.getId());
 
                     Map<String, Object> map = new HashMap<>();

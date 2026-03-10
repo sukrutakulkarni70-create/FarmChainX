@@ -31,6 +31,10 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/reset-password/reset-password').then(m => m.ResetPassword)
   },
   {
+  path: 'verify',
+  loadComponent: () => import('./components/verify-product/verify-product').then((m) => m.VerifyProduct),
+},
+  {
     path: 'verify/:uuid',
     loadComponent: () => import('./components/verify-product/verify-product').then((m) => m.VerifyProduct),
   },
