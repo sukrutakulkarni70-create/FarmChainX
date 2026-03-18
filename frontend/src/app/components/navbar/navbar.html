@@ -440,38 +440,40 @@
     <!-- Main Navigation (Role-Aware) -->
     <div class="fcx-nav-menu" *ngIf="isLoggedIn">
       <!-- Farmer Navigation (Show only when NOT on Farmer Dashboard) -->
-      <ng-container *ngIf="isFarmer && !isFarmerDashboard">
+      <ng-container *ngIf="isFarmer">
         <a routerLink="/dashboard" routerLinkActive="active" class="fcx-menu-item">Dashboard</a>
         <a routerLink="/products/my" routerLinkActive="active" class="fcx-menu-item">My Products</a>
         <a routerLink="/marketplace" routerLinkActive="active" class="fcx-menu-item">Marketplace</a>
       </ng-container>
 
       <!-- Consumer Navigation -->
-      <ng-container *ngIf="isConsumer && !isConsumerDashboard">
+      <ng-container *ngIf="isConsumer">
         <a routerLink="/consumer/dashboard" routerLinkActive="active" class="fcx-menu-item">Consumer Panel</a>
         <a routerLink="/consumer/marketplace" routerLinkActive="active" class="fcx-menu-item">Marketplace</a>
         <a routerLink="/scanner" routerLinkActive="active" class="fcx-menu-item">Product Scanner</a>
       </ng-container>
 
       <!-- Distributor Navigation -->
-      <ng-container *ngIf="isDistributor && !isDistributorDashboard">
+      <ng-container *ngIf="isDistributor">
         <a routerLink="/distributor/procurement" routerLinkActive="active" class="fcx-menu-item">Procurement</a>
         <a routerLink="/distributor/logistics" routerLinkActive="active" class="fcx-menu-item">Logistics</a>
       </ng-container>
 
       <!-- Retailer Navigation -->
-      <ng-container *ngIf="isRetailer && !isRetailerDashboard">
+      <ng-container *ngIf="isRetailer">
         <a routerLink="/retailer/dashboard" routerLinkActive="active" class="fcx-menu-item">Dashboard</a>
         <a routerLink="/retailer/inventory" routerLinkActive="active" class="fcx-menu-item">Inventory</a>
         <a routerLink="/retailer/market" routerLinkActive="active" class="fcx-menu-item">Market</a>
       </ng-container>
 
       <!-- Admin Navigation -->
-      <ng-container *ngIf="isAdmin">
-        <a routerLink="/admin/overview" routerLinkActive="active" class="fcx-menu-item">Overview</a>
-        <a routerLink="/admin/users" routerLinkActive="active" class="fcx-menu-item">Users</a>
-        <a routerLink="/admin/logs" routerLinkActive="active" class="fcx-menu-item">Logs</a>
-      </ng-container>
+<ng-container *ngIf="isAdmin">
+  <div class="flex justify-center gap-8 w-full">
+    <a routerLink="/admin/overview" routerLinkActive="active" class="fcx-menu-item">Overview</a>
+    <a routerLink="/admin/users" routerLinkActive="active" class="fcx-menu-item">Users</a>
+    <a routerLink="/admin/logs" routerLinkActive="active" class="fcx-menu-item">Logs</a>
+  </div>
+</ng-container>
     </div>
 
     <!-- Right section -->
@@ -571,7 +573,7 @@
 
     <ng-container *ngIf="isLoggedIn">
       <!-- Role-specific Mobile Items -->
-      <ng-container *ngIf="isFarmer && !isFarmerDashboard">
+      <ng-container *ngIf="isFarmer">
         <a routerLink="/dashboard" class="fcx-mobile-item" (click)="closeMobileMenu()">Dashboard</a>
         <a routerLink="/products/my" class="fcx-mobile-item" (click)="closeMobileMenu()">My Products</a>
         <a routerLink="/marketplace" class="fcx-mobile-item" (click)="closeMobileMenu()">Marketplace</a>

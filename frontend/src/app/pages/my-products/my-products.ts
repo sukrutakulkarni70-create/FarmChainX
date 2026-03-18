@@ -118,7 +118,7 @@ export class MyProducts {
 ).subscribe({
       next: (res) => {
         const product = this.products.find((p) => p.id === id)!;
-        const base = environment.apiUrl || 'http://localhost:8081';
+        const base = environment.apiUrl || 'http://localhost:8080';
         const url = res.qrPath && res.qrPath.startsWith('http') ? res.qrPath : `${base}${res.qrPath}`;
         const filename = this.generateFilename(product);
 

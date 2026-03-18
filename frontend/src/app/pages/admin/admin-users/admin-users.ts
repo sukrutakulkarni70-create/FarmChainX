@@ -40,7 +40,7 @@ export class AdminUsers implements OnInit {
   }
 
   private derivePrimaryRole(roles: string[]): PrimaryRole {
-    const set = new Set(roles.map(this.normalizeRole));
+    const set = new Set(roles.map(r => this.normalizeRole(r)));
     if (set.has('ROLE_ADMIN')) return 'ADMIN';
     if (set.has('ROLE_FARMER')) return 'FARMER';
     if (set.has('ROLE_DISTRIBUTOR')) return 'DISTRIBUTOR';
@@ -51,7 +51,7 @@ export class AdminUsers implements OnInit {
 
   loadUsers(): void {
     this.isLoading = true;
-    this.http.get<any[]>('/api/admin/users').subscribe({
+    this.http.get<any[]>('http://localhost:8080/api/admin/users').subscribe({
       next: (data) => {
         this.users = data.map(u => {
           const roles = (u.roles ?? []).map((r: any) => this.normalizeRole(r));
@@ -98,10 +98,15 @@ export class AdminUsers implements OnInit {
 
     user.isPromoting = true; // Set promoting state to disable the button
 
-    this.http.post(`/api/admin/promote/${userId}`, {}).subscribe({
+    this.http.post(`http://localhost:8080/api/admin/promote/${userId}`, {}).subscribe({
       next: () => {
         alert(`${user.name} promoted to Admin successfully!`);
-        this.loadUsers(); // Reload to refresh data for all users
+        next: () => {
+  user.roles.push('ROLE_ADMIN');
+  user.isAdmin = true;
+  user.primaryRole = 'ADMIN';
+  user.isPromoting = false;
+} // Reload to refresh data for all users
       },
       error: (err) => {
         user.isPromoting = false; // Reset state on error
