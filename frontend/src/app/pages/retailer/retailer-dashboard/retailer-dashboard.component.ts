@@ -1,8 +1,11 @@
-import { HttpClient } from '@angular/common/http';
-import { Component, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, AfterViewInit, ViewChild, ElementRef, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Chart, registerables } from 'chart.js';
+import { RetailerService, RecentOrder } from '../../../services/retailer.service';
+import { InventoryService, InventoryItem } from '../../../services/inventory.service';
+
+// Register all Chart.js modules once
 Chart.register(...registerables);
 
 @Component({
@@ -10,217 +13,195 @@ Chart.register(...registerables);
   imports: [CommonModule, RouterModule],
   templateUrl: './retailer-dashboard.component.html',
 })
-export class RetailerDashboardComponent implements AfterViewInit {
-  @ViewChild('barChart', { static: false }) barChartRef!: ElementRef<HTMLCanvasElement>;
-  @ViewChild('pieChart', { static: false }) pieChartRef!: ElementRef<HTMLCanvasElement>;
+export class RetailerDashboardComponent implements AfterViewInit, OnDestroy {
 
-  private barChartInstance: Chart | null = null;
-  private pieChartInstance: Chart | null = null;
+  // ─── Template References ────────────────────────────────────────────────────
+  // These names MUST match #salesChart and #inventoryChart in the HTML template
+  @ViewChild('salesChart', { static: false }) salesChartRef!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('inventoryChart', { static: false }) inventoryChartRef!: ElementRef<HTMLCanvasElement>;
 
-  constructor(private http: HttpClient) { }
+  private salesChartInstance: Chart | null = null;
+  private inventoryChartInstance: Chart | null = null;
 
-  stats: any = {
-    inventoryValue: 0,
-    openPOs: 0,
-    incomingShipments: 0,
-    lowStock: 0
-  };
+  // ─── State ──────────────────────────────────────────────────────────────────
+  isLoading = true;
+  error: string | null = null;
 
-  recentOrders: any[] = [];
+  // Summary metrics (Inventory-based)
+  totalProducts = 0;
+  totalQuantity = 0;
+  lowStockCount = 0;
+  outOfStockCount = 0;
+
+  activityLog: any[] = [];
+
+  constructor(
+    private retailerService: RetailerService,
+    private inventoryService: InventoryService
+  ) { }
 
   ngAfterViewInit(): void {
-    this.fetchDashboardData();
+    // Initial load
+    this.refresh();
   }
 
-  fetchDashboardData() {
-    // 1. Fetch Stats
-    this.http.get<any>('/api/retailer/dashboard-stats').subscribe({
-      next: (data) => {
-        this.stats = data;
+  ngOnDestroy(): void {
+    this.salesChartInstance?.destroy();
+    this.inventoryChartInstance?.destroy();
+  }
+
+  // ─── Data Loading ────────────────────────────────────────────────────────────
+
+  refresh(): void {
+    this.isLoading = true;
+    this.error = null;
+
+    // 1. Sync Inventory from backend
+    this.inventoryService.getInventory().subscribe({
+      next: (inventory: InventoryItem[]) => {
+        this.updateData(inventory);
+        this.isLoading = false;
       },
-      error: (err) => {
-        console.error('Failed to load stats', err);
-        // Set fallback stats
-        this.stats = {
-          inventoryValue: 125000,
-          openPOs: 5,
-          incomingShipments: 3,
-          lowStock: 2
-        };
+      error: err => {
+        console.error('Inventory load error:', err);
+        this.error = 'Failed to load live inventory data.';
+        this.isLoading = false;
       }
     });
 
-    // 2. Fetch Sales Chart
-    this.http.get<any>('/api/retailer/sales-chart').subscribe({
-      next: (data) => {
-        // Check if data is valid before attempting to use it
-        if (data && data.labels && data.values && data.labels.length > 0) {
-          this.renderBarChart(data.labels, data.values);
-        } else {
-          // Data is null or invalid, use fallback
-          console.log('Invalid chart data received, using fallback');
-          const fallbackLabels = this.getLast7Days();
-          const fallbackValues = [15000, 18000, 22000, 19000, 25000, 21000, 23000];
-          this.renderBarChart(fallbackLabels, fallbackValues);
-        }
-      },
-      error: (err) => {
-        console.error('Failed to load chart data, using fallback', err);
-        // Use fallback data so graph still displays
-        const fallbackLabels = this.getLast7Days();
-        const fallbackValues = [15000, 18000, 22000, 19000, 25000, 21000, 23000];
-        this.renderBarChart(fallbackLabels, fallbackValues);
-      }
+    // 2. Sync Activity Log from backend
+    this.inventoryService.refreshActivityLog();
+
+    // 3. Keep UI responsive by listening to shared state
+    this.inventoryService.activity$.subscribe(logs => {
+      this.activityLog = logs;
     });
-
-    // 3. Render Pie Chart (Inventory Distribution)
-    this.renderPieChart();
-
-    // 4. Fetch Recent Orders
-    this.http.get<any>('/api/track/pending?size=5').subscribe({
-      next: (page) => {
-        const orders = page.content || [];
-        this.recentOrders = orders.map((o: any) => ({
-          id: o.productId,
-          supplier: 'Distributor',
-          items: 'Batch #' + o.productId,
-          total: 0,
-          status: 'Pending'
-        }));
-      },
-      error: (err) => console.error('Failed to load orders', err)
+    
+    this.inventoryService.inventory$.subscribe(inventory => {
+      if (inventory && inventory.length > 0) {
+        this.updateData(inventory);
+      }
     });
   }
 
-  renderBarChart(labels: string[], values: number[]) {
-    if (!this.barChartRef) {
-      console.error('Bar chart ref not available');
-      return;
-    }
+  private updateData(inventory: InventoryItem[]): void {
+    this.calculateStats(inventory);
+    this.updateCharts(inventory);
+  }
 
-    const barCtx = this.barChartRef.nativeElement.getContext('2d')!;
+  calculateStats(inventory: InventoryItem[]): void {
+    const items = inventory || [];
+    this.totalProducts = items.length;
+    this.totalQuantity = items.reduce((sum, item) => sum + (item.quantity || 0), 0);
+    this.lowStockCount = items.filter(item => item.quantity > 0 && item.quantity < 10).length;
+    this.outOfStockCount = items.filter(item => (item.quantity || 0) <= 0).length;
+  }
 
-    // Destroy existing chart if it exists
-    if (this.barChartInstance) {
-      this.barChartInstance.destroy();
-    }
+  updateCharts(inventory: InventoryItem[]): void {
+    if (!inventory?.length) return;
 
-    this.barChartInstance = new Chart(barCtx, {
-      type: 'bar',
+    // --- 1. Bar Chart: Product Quantities ---
+    const labels = inventory.map(i => i.productName);
+    const values = inventory.map(i => i.quantity);
+    this.renderSalesChart(labels, values);
+
+    // --- 2. Doughnut Chart: Stock Status Distribution ---
+    const inStock = inventory.filter(i => i.quantity >= 10).length;
+    const lowStock = this.lowStockCount;
+    const outStock = this.outOfStockCount;
+
+    const statusLabels = ['In Stock', 'Low Stock', 'Out of Stock'];
+    const statusValues = [inStock, lowStock, outStock];
+    const statusColors = [
+      'rgba(16, 185, 129, 0.85)', // Emerald
+      'rgba(251, 191, 36, 0.85)', // Orange
+      'rgba(239, 68, 68, 0.85)'   // Red
+    ];
+    this.renderInventoryChartFromData(statusLabels, statusValues, statusColors);
+  }
+
+  renderInventoryChartFromData(labels: string[], data: number[], colors: string[]): void {
+    if (!this.inventoryChartRef?.nativeElement) return;
+    this.inventoryChartInstance?.destroy();
+    const ctx = this.inventoryChartRef.nativeElement.getContext('2d')!;
+    this.inventoryChartInstance = new Chart(ctx, {
+      type: 'doughnut',
       data: {
-        labels: labels,
+        labels,
         datasets: [{
-          label: 'Sales (₹)',
-          data: values,
-          borderRadius: 8,
-          backgroundColor: 'rgba(16, 185, 129, 0.85)',
-          hoverBackgroundColor: 'rgba(16, 185, 129, 1)',
-        }],
+          data,
+          backgroundColor: colors,
+          borderWidth: 0,
+          hoverOffset: 8
+        }]
       },
       options: {
         responsive: true,
-        maintainAspectRatio: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { 
+            position: 'bottom',
+            labels: { usePointStyle: true, padding: 15 }
+          }
+        }
+      }
+    });
+  }
+
+  // ─── Chart Rendering (repurposed for product quantities) ───────────────────
+
+  renderSalesChart(labels: string[], values: number[]): void {
+    if (!this.salesChartRef?.nativeElement) return;
+    this.salesChartInstance?.destroy();
+
+    const ctx = this.salesChartRef.nativeElement.getContext('2d')!;
+    this.salesChartInstance = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Quantity (kg)',
+          data: values,
+          borderRadius: 6,
+          backgroundColor: 'rgba(59, 130, 246, 0.8)', // Blue
+          hoverBackgroundColor: 'rgba(59, 130, 246, 1)',
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
         plugins: {
           legend: { display: false },
           tooltip: {
-            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            backgroundColor: 'rgba(15, 23, 42, 0.9)',
             padding: 12,
             cornerRadius: 8,
-            titleFont: { size: 14, weight: 'bold' },
-            bodyFont: { size: 13 }
+            callbacks: {
+              label: ctx => ` Quantity: ${ctx.parsed.y} kg`
+            }
           }
         },
         scales: {
           y: {
             beginAtZero: true,
-            grid: {
-              color: 'rgba(0, 0, 0, 0.05)'
-            }
+            grid: { color: 'rgba(0,0,0,0.05)' },
+            title: { display: true, text: 'Inventory Level (kg)', font: { size: 10 } }
           },
-          x: {
-            grid: {
-              display: false
-            }
-          }
+          x: { grid: { display: false } }
         }
-      },
+      }
     });
   }
 
-  renderPieChart() {
-    if (!this.pieChartRef) {
-      console.error('Pie chart ref not available');
-      return;
+  // ─── Helpers ──────────────────────────────────────────────────────────────────
+
+  statusClass(status: string): string {
+    switch ((status || '').toLowerCase()) {
+      case 'delivered': case 'sold': return 'status-delivered';
+      case 'shipped': case 'added':  return 'status-shipped';
+      case 'processing': return 'status-processing';
+      case 'pending':   return 'status-pending';
+      default:          return 'status-default';
     }
-
-    const pieCtx = this.pieChartRef.nativeElement.getContext('2d')!;
-
-    // Destroy existing chart if it exists
-    if (this.pieChartInstance) {
-      this.pieChartInstance.destroy();
-    }
-
-    this.pieChartInstance = new Chart(pieCtx, {
-      type: 'doughnut',
-      data: {
-        labels: ['Vegetables', 'Fruits', 'Grains', 'Others'],
-        datasets: [{
-          data: [45, 25, 20, 10],
-          backgroundColor: [
-            'rgba(16, 185, 129, 0.8)',
-            'rgba(59, 130, 246, 0.8)',
-            'rgba(251, 191, 36, 0.8)',
-            'rgba(139, 92, 246, 0.8)'
-          ],
-          borderWidth: 0
-        }],
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: true,
-        plugins: {
-          legend: {
-            position: 'bottom',
-            labels: {
-              padding: 15,
-              font: { size: 12 },
-              usePointStyle: true
-            }
-          }
-        }
-      },
-    });
-  }
-
-  statusClass(s: string) {
-    if (!s) return 'bg-gray-100 text-gray-800';
-    switch (s.toLowerCase()) {
-      case 'delivered':
-        return 'bg-emerald-100 text-emerald-800';
-      case 'shipped':
-        return 'bg-sky-100 text-sky-800';
-      case 'processing':
-        return 'bg-yellow-100 text-yellow-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
-  }
-
-  refresh() {
-    this.fetchDashboardData();
-  }
-
-  export() {
-    console.log('Export data');
-  }
-
-  getLast7Days(): string[] {
-    const dates = [];
-    for (let i = 6; i >= 0; i--) {
-      const d = new Date();
-      d.setDate(d.getDate() - i);
-      dates.push(d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
-    }
-    return dates;
   }
 }
