@@ -1,17 +1,5 @@
 package com.farmchainX.farmchainX.controller;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
-import com.farmchainX.farmchainX.model.SupplyChainLog;
-import com.farmchainX.farmchainX.model.User;
-import com.farmchainX.farmchainX.repository.SupplyChainLogRepository;
-import com.farmchainX.farmchainX.repository.UserRepository;
-import com.farmchainX.farmchainX.service.SupplyChainService;
-import com.farmchainX.farmchainX.service.ProductService;
-
 import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -19,11 +7,29 @@ import java.nio.file.StandardOpenOption;
 import java.security.Principal;
 import java.util.List;
 import java.util.Map;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.farmchainX.farmchainX.model.DispatchOffer;
+import com.farmchainX.farmchainX.model.SupplyChainLog;
+import com.farmchainX.farmchainX.model.User;
 import com.farmchainX.farmchainX.repository.DispatchOfferRepository;
-import com.farmchainX.farmchainX.model.Product;
 import com.farmchainX.farmchainX.repository.ProductRepository;
 import com.farmchainX.farmchainX.repository.RetailerInventoryRepository;
+import com.farmchainX.farmchainX.repository.SupplyChainLogRepository;
+import com.farmchainX.farmchainX.repository.UserRepository;
+import com.farmchainX.farmchainX.service.ProductService;
+import com.farmchainX.farmchainX.service.SupplyChainService;
 
 @RestController
 @RequestMapping("/api/track")
@@ -332,16 +338,34 @@ public class SupplyChainController {
                                         com.farmchainX.farmchainX.model.Product p = productService
                                                         .getProductById(log.getProductId());
                                         if (p != null) {
-                                                item.put("cropName", p.getCropName());
-                                                item.put("qualityGrade", p.getQualityGrade());
+                                                item.put("cropName", p.getCropName() != null ? p.getCropName() : "Unknown Product");
+                                                item.put("qualityGrade", p.getQualityGrade() != null ? p.getQualityGrade() : "N/A");
                                                 item.put("quantity", "1000"); // Mock quantity
                                                 item.put("unit", "kg");
                                                 item.put("status", "In Stock");
                                                 item.put("value", p.getPrice() != null ? p.getPrice() : 0.0);
                                                 item.put("imagePath", p.getImagePath());
+                                        } else {
+                                                // Product not found - set default values
+                                                item.put("cropName", "Product #" + log.getProductId());
+                                                item.put("qualityGrade", "N/A");
+                                                item.put("quantity", "0");
+                                                item.put("unit", "kg");
+                                                item.put("status", "Unavailable");
+                                                item.put("value", 0.0);
+                                                item.put("imagePath", null);
                                         }
                                 } catch (Exception e) {
-                                        // Ignore if product not found
+                                        System.err.println("ERROR: Failed to load product " + log.getProductId() + ": " + e.getMessage());
+                                        e.printStackTrace();
+                                        // Set default values when product fetch fails
+                                        item.put("cropName", "Product #" + log.getProductId());
+                                        item.put("qualityGrade", "N/A");
+                                        item.put("quantity", "0");
+                                        item.put("unit", "kg");
+                                        item.put("status", "Error Loading");
+                                        item.put("value", 0.0);
+                                        item.put("imagePath", null);
                                 }
 
                                 inventory.add(item);

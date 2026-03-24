@@ -136,11 +136,11 @@ export class ConsumerMarketplaceComponent implements OnInit {
     ) { }
 
     ngOnInit() {
-        // Load farmer products for marketplace (direct purchase from farmers)
-        this.productService.getMarketProducts().subscribe({
+        // Load retailer inventory for marketplace (products from retailers)
+        this.productService.getConsumerMarketProducts().subscribe({
             next: (data) => {
-                // Filter out products that are marked as Sold (farmer products use isSold boolean)
-                const available = (data || []).filter(p => !p.isSold);
+                // Filter out products with no quantity
+                const available = (data || []).filter(p => (p.quantity || 0) > 0);
                 this.products.set(available);
             },
             error: (err) => console.error('Market load error', err)

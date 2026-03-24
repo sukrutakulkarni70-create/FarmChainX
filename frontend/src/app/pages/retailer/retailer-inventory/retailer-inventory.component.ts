@@ -262,6 +262,7 @@ export class RetailerInventoryComponent implements OnInit {
       default:            return status || 'Unknown';
     }
   }
+  
 
 
 }

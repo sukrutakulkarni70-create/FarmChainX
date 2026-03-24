@@ -41,7 +41,7 @@ export class RetailerDispatchedProductsComponent implements OnInit {
             return;
         }
 
-        this.productService.acceptOffer(offer.offerId, 'Retailer Warehouse').subscribe({
+        this.productService.acceptOffer(offer.offerId).subscribe({
             next: (response) => {
                 console.log('Offer accepted:', response);
                 alert(`Successfully accepted ${offer.cropName}! Product added to your inventory.`);

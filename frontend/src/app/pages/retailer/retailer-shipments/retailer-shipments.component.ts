@@ -67,7 +67,7 @@ export class RetailerShipmentsComponent implements OnInit {
 
     const location = 'Retailer Warehouse';
 
-    this.productService.acceptOffer(offer.offerId, location).subscribe({
+    this.productService.acceptOffer(offer.offerId).subscribe({
       next: () => {
         alert('✅ Dispatch offer accepted! Product will appear in pending shipments.');
         this.fetchDispatchOffers();

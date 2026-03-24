@@ -51,55 +51,31 @@ export class DistributorMarketComponent implements OnInit {
         });
     }
 
-    placeOrder(item: any) {
-        const qty = item.selectedQty;
+  placeOrder(item: any) {
 
-        // 🛑 1. Validation
-        if (!qty || qty <= 0) {
-            alert('❌ Please enter a valid quantity.');
-            return;
-        }
-
-        if (qty > item.availableStock) {
-            alert(`❌ Not enough stock! Market only has ${item.availableStock} ${item.unit} available.`);
-            return;
-        }
-
-        const totalCost = item.price * qty;
-        if (confirm(`Procure ${qty} ${item.unit} of ${item.productName} for ₹${totalCost.toLocaleString()}?`)) {
-            this.purchasingId = item.id;
-
-            const payload = {
-                productId: item.id,
-                productName: item.productName,
-                quantity: qty,
-                price: item.price,
-                supplier: item.farmerName,
-                retailerId: 0
-            };
-
-            this.http.post(`${environment.apiUrl}/orders`, payload).subscribe({
-                next: (res: any) => {
-                    alert(`✅ Order Placed Successfully!\n\nOrder ID: PO-${res.orderId}\nRemaining Market Stock: ${res.remainingMarketStock || res.remainingQty} ${item.unit}`);
-                    this.purchasingId = null;
-                    
-                    // Refresh inventory in background
-                    this.inventoryService.refreshInventory();
-                    
-                    // 🛑 2. Optimistic UI update: Reduce available stock immediately in the UI
-                    item.availableStock -= qty;
-                    item.selectedQty = 1; // reset selection
-                    
-                    if (item.availableStock === 0) {
-                        this.marketItems = this.marketItems.filter(m => m.id !== item.id);
-                    }
-                },
-                error: (err) => {
-                    this.purchasingId = null;
-                    const serverMsg = err.error?.error || err.error?.message || 'Server error occurred.';
-                    alert(`❌ Failed: ${serverMsg}`);
-                }
-            });
-        }
+    if (!item.offerId) {
+        alert("❌ offerId missing");
+        return;
     }
+
+    if (!confirm(`Accept ${item.cropName}?`)) return;
+
+    this.http.post(
+        `${environment.apiUrl}/dispatch/accept/${item.offerId}`,
+        {}   // ✅ NO payload
+    ).subscribe({
+        next: () => {
+            alert('✅ Accepted');
+
+            this.marketItems = this.marketItems.filter(
+                m => m.offerId !== item.offerId
+            );
+        },
+        error: (err) => {
+            alert('❌ Accept failed');
+            console.error(err);
+        }
+    });
 }
+}
+

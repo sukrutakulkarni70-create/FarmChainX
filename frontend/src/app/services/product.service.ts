@@ -47,12 +47,13 @@ export class ProductService {
         return this.http.get<any[]>(`${this.apiUrl}/track/users/retailers`);
     }
 
-    handoverToRetailer(productId: number, retailerId: number, location: string): Observable<any> {
-        return this.http.post<any>(`${this.apiUrl}/track/update-chain`, {
+    handoverToRetailer(productId: number, retailerId: number, location: string, quantity?: number): Observable<any> {
+        return this.http.post<any>(`${this.apiUrl}/dispatch/create`, {
             productId,
-            toUserId: retailerId,
-            location: location,
-            notes: 'Handover to Retailer'
+            retailerId,
+            location,
+            notes: 'Dispatched to retailer',
+            quantity: quantity
         });
     }
 
@@ -106,21 +107,25 @@ export class ProductService {
     }
 
     getRetailerOffers(): Observable<any[]> {
-        return this.http.get<any[]>(`${this.apiUrl}/retailer/dispatch-offers`);
+        return this.http.get<any[]>(`${this.apiUrl}/dispatch/market`);
     }
 
-    acceptOffer(offerId: number, location: string): Observable<any> {
-        return this.http.post<any>(`${this.apiUrl}/retailer/accept-offer/${offerId}`, {
-            location
-        });
-    }
+ acceptOffer(offerId: number) {
+    return this.http.post(
+        `${this.apiUrl}/dispatch/accept/${offerId}`,
+        {}
+    );
+}
 
     rejectOffer(offerId: number): Observable<any> {
-        return this.http.post<any>(`${this.apiUrl}/retailer/reject-offer/${offerId}`, {});
+        return this.http.post<any>(`${this.apiUrl}/dispatch/reject/${offerId}`, {});
     }
 
     // Get dispatch history for distributor
     getDispatchHistory(): Observable<any[]> {
         return this.http.get<any[]>(`${this.apiUrl}/track/dispatch-history`);
     }
+    getRetailerInventory(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/dispatch/retailer/inventory`);
+}
 }

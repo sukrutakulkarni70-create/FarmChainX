@@ -15,6 +15,7 @@ export class RetailerSelectionComponent implements OnInit {
     retailers: any[] = [];
     selectedRetailerId: number | null = null;
     dispatchLocation = 'Distributor Warehouse → Retailer';
+    dispatchQuantity = 10; // Default quantity
     loading = false;
     dispatching = false;
 
@@ -77,7 +78,8 @@ export class RetailerSelectionComponent implements OnInit {
         this.productService.handoverToRetailer(
             this.productToDispatch.productId,
             this.selectedRetailerId,
-            this.dispatchLocation
+            this.dispatchLocation,
+            this.dispatchQuantity
         ).subscribe({
             next: (response) => {
                 console.log('✅ Dispatch successful!', response);

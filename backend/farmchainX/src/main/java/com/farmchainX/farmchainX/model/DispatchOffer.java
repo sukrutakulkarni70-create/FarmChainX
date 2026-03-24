@@ -1,7 +1,13 @@
 package com.farmchainX.farmchainX.model;
 
-import jakarta.persistence.*;
 import java.time.LocalDateTime;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "dispatch_offers")
@@ -28,6 +34,11 @@ public class DispatchOffer {
 
     @Column(name = "status", nullable = false)
     private String status; // PENDING, ACCEPTED, REJECTED, EXPIRED
+    @Column(name = "target_retailer_id")
+    private Long targetRetailerId;
+
+    @Column(name = "quantity")
+    private Double quantity;
 
     @Column(name = "accepted_by")
     private Long acceptedBy;
@@ -112,5 +123,21 @@ public class DispatchOffer {
 
     public void setAcceptedAt(LocalDateTime acceptedAt) {
         this.acceptedAt = acceptedAt;
+    }
+
+    public Long getTargetRetailerId() {
+        return targetRetailerId;
+    }
+
+    public void setTargetRetailerId(Long targetRetailerId) {
+        this.targetRetailerId = targetRetailerId;
+    }
+
+    public Double getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Double quantity) {
+        this.quantity = quantity;
     }
 }

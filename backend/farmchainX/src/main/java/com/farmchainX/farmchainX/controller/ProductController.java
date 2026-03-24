@@ -645,10 +645,12 @@ public ResponseEntity<?> checkoutProduct(
 
     @GetMapping("/products/consumer")
     public List<Map<String, Object>> getConsumerProducts() {
-        // Fetch products from retailer inventory only (IN_STOCK status)
+        // Fetch products from retailer inventory only (IN_STOCK status with quantity > 0)
         List<RetailerInventory> inventoryItems = retailerInventoryRepository.findByStatus("IN_STOCK");
 
-        return inventoryItems.stream().map(inventory -> {
+        return inventoryItems.stream()
+                .filter(inventory -> inventory.getQuantity() != null && inventory.getQuantity() > 0)
+                .map(inventory -> {
             Map<String, Object> item = new java.util.HashMap<>();
 
             // Get product details
@@ -673,6 +675,7 @@ public ResponseEntity<?> checkoutProduct(
             // Retailer inventory specific info
             item.put("price", inventory.getPricePerUnit());
             item.put("quantity", inventory.getQuantity());
+            item.put("quantityUnit", product.getQuantityUnit() != null ? product.getQuantityUnit() : "kg");
             item.put("inventoryId", inventory.getId());
             item.put("status", inventory.getStatus());
 
